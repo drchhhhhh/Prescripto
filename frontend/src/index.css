@@ -1,2 +1,7 @@
 /* THIS IS THE GLOBAL CSS DO NOT DELETE THIS */
-@import "tailwindcss";
+/*@import "tailwindcss";*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* i fear di na magagamit */
+
