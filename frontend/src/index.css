@@ -8,3 +8,25 @@
     --color-darkGray: #424242;
     --color-cleanWhite: #FFFFFF;
 }
+
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsRegular.ttf");
+    font-weight: normal;
+}
+  
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsBold.ttf");
+    font-weight: bold;
+}
+  
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsSemiBold.ttf");
+    font-weight: 600;
+}
+
+@theme {
+    --font-poppins: Poppins, "sans-serif"
+}
