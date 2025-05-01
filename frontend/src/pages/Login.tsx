@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User, Lock } from "lucide-react";
-import loginImage from '../assets/react.svg';
+import loginImage from '../assets/login.svg';
 
 const LoginPage = () => {
   const [userId, setUserId] = useState('');
@@ -29,8 +29,8 @@ const LoginPage = () => {
           <form className="flex flex-col gap-5" onSubmit={handleLogin}>
             {/* User ID */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="userId" className="text-[13px] font-medium text-gray-800">
-                User ID
+              <label htmlFor="userId" className="text-[13px] font-medium text-gray-800 text-left">
+                Username
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -42,7 +42,7 @@ const LoginPage = () => {
                   type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder="Enter User ID"
+                  placeholder="Enter Username"
                   className="w-full h-[35px] pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none"
                 />
               </div>
@@ -50,7 +50,7 @@ const LoginPage = () => {
 
             {/* Password */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-[13px] font-medium text-gray-800">
+              <label htmlFor="password" className="text-[13px] font-medium text-gray-800 text-left">
                 Password
               </label>
               <div className="relative">
