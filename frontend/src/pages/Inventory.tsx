@@ -1,14 +1,41 @@
 import React from 'react'
+import { AiOutlineMedicineBox } from "react-icons/ai";
+import { MdOutlineWarningAmber } from "react-icons/md";
 
 const InventoryPage = () => {
   return (
-    <main className="bg-gray-100 w-100 h-100">
-        <section className='w-100 flex flex-row'>
+    <main className="bg-gray-100 w-full min-h-screen p-5">
+        <section className='w-full flex flex-row justify-between items-center'>
             <div className="flex flex-col">
                 <h1 className='text-darkGray text-2xl font-bold'>Inventory</h1>
                 <h3>List of medicines available for sale.</h3>
             </div>
-            <button className='bg-darkGreen rounded-md p-2 text-cleanWhite'>Add New Item</button>
+            <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>+ Add New Item</button>
+        </section>
+        <section className="flex flex-row gap-5 mt-15">
+            <div className="flex flex-col bg-cleanWhite w-72 h-48 shadow rounded-sm border-blueBorder border-2 items-center justify-between">
+                <AiOutlineMedicineBox className='text-blueBorder text-6xl mt-2'/>
+                <h1 className="text-xl">Medicines Available</h1>
+                <button className="bg-lightBlue w-full p-1 border-t-2 border-blueBorder rounded-b-sm cursor-pointer hover:bg-lightBlue-dark ease-in duration-100">
+                    View Full List »
+                </button>
+            </div>
+
+            <div className="flex flex-col bg-cleanWhite w-72 h-48 shadow rounded-sm border-greenBorder border-2 items-center justify-between">
+                <AiOutlineMedicineBox className='text-greenBorder text-6xl mt-2'/>
+                <h1 className="text-xl">Medicine Groups</h1>
+                <button className="bg-mintGreen w-full p-1 border-t-2 border-greenBorder rounded-b-sm cursor-pointer hover:bg-mintGreen-dark ease-in duration-100">
+                    View Groups »
+                </button>
+            </div>
+
+            <div className="flex flex-col bg-cleanWhite w-72 h-48 shadow rounded-sm border-redBorder border-2 items-center justify-between">
+                <MdOutlineWarningAmber className='text-redBorder text-6xl mt-2'/>
+                <h1 className="text-xl">Medicine Shortage</h1>
+                <button className="bg-peach w-full p-1 border-t-2 border-redBorder rounded-b-sm cursor-pointer hover:bg-peach-dark ease-in duration-100">
+                    Resolve Now »
+                </button>
+            </div>
         </section>
     </main>
   )
