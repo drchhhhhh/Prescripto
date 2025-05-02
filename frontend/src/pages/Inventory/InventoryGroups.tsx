@@ -16,7 +16,7 @@ const InventoryGroups = () => {
                     <h3>List of medicines available for sale.</h3>
                 </div>
                 {/* Add a popup form for Group Creation */}
-                <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>+ Add New Item</button>
+                <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>+ Add New Group</button>
             </section>
 
             {/* Search and Filter Section */}
