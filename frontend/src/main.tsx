@@ -9,6 +9,7 @@ import InventoryItems from './pages/Inventory/InventoryItems.tsx'
 import InventoryAddMedicine from './pages/Inventory/InventoryAddMedicine.tsx'
 import TransactionForm from './pages/Transaction/TransactionLog.tsx'
 import TransactionHistory from './pages/Transaction/TransactionHistory.tsx'
+import InventoryGroups from './pages/Inventory/InventoryGroups.tsx'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: '/inventory/item-list/add',
     element: <InventoryAddMedicine />,
+  },
+  {
+    path: '/inventory/item-groups',
+    element: <InventoryGroups />,
   },
   {
     path: '/transaction/log',
