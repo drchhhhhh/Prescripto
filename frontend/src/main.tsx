@@ -7,6 +7,8 @@ import InventoryPage from './pages/Inventory/Inventory.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
 import InventoryItems from './pages/Inventory/InventoryItems.tsx'
 import InventoryAddMedicine from './pages/Inventory/InventoryAddMedicine.tsx'
+import TransactionForm from './pages/Transaction/TransactionLog.tsx'
+import TransactionHistory from './pages/Transaction/TransactionHistory.tsx'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,14 @@ const router = createBrowserRouter([
   {
     path: '/inventory/item-list/add',
     element: <InventoryAddMedicine />,
+  },
+  {
+    path: '/transaction/log',
+    element: <TransactionForm />,
+  },
+  {
+    path: '/transaction/history',
+    element: <TransactionHistory />,
   },
 ]);
 
