@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Plus, Minus, Trash2, X, AlertCircle, CheckCircle } from "lucide-react"
-import Header from "../Header";
+import Header from "../../components/Header";
 
 interface MedicineItem {
   id: string
