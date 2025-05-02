@@ -15,7 +15,8 @@ const InventoryGroups = () => {
                     </div>
                     <h3>List of medicines available for sale.</h3>
                 </div>
-                <Link className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100' to="/inventory/item-list/add">+ Add New Group</Link>
+                {/* Add a popup form for Group Creation */}
+                <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>+ Add New Item</button>
             </section>
 
             {/* Search and Filter Section */}
@@ -26,7 +27,7 @@ const InventoryGroups = () => {
                         type="text"
                         // value={query}
                         // onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search Medicine Inventory.."
+                        placeholder="Search Groups..."
                         className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
                     />
                     <button type="submit" className="text-gray-500 hover:text-gray-700 transition" aria-label="Search" >

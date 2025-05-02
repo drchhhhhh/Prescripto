@@ -10,8 +10,7 @@ const InventoryPage = () => {
                 <h1 className='text-darkGray text-2xl font-bold'>Inventory</h1>
                 <h3>List of medicines available for sale.</h3>
             </div>
-            {/* Add a popup form for Group Creation */}
-            <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>+ Add New Item</button>
+            <Link className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100' to="/inventory/item-list/add">+ Add New Group</Link>
         </section>
 
         <section className="flex flex-row gap-5 mt-15">
