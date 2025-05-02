@@ -21,7 +21,7 @@ const Header = () => {
       <div className="flex items-center">
         <Sun className="w-6 h-6 text-yellow-400 mr-2" />
         <div className="text-right">
-          <p className="font-semibold">Good Morning</p>
+          <p className="font-semibold">Good Morning</p> {/*di pa ayos logic nito*/}
           <p className="text-sm">
             {date} &nbsp; {time}
           </p>
