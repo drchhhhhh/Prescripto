@@ -74,19 +74,19 @@ const TransactionForm = () => {
   }
 
   return (
-    <main className="bg-white rounded-lg shadow-sm relative font-sans">
+    <main className="bg-white rounded-lg shadow-sm relative font-sans"> {/*aayusin ko pa colors*/}
         <section className="p-6">
             <header className="flex items-center justify-between mb-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                    Transaction <span className="text-gray-400">&gt;</span>{" "}
-                    <span className="text-green-600">Log Transaction</span>
+                    <h1 className="text-2xl font-semibold text-darkGray">
+                        Transaction <span className="text-gray-400">&gt;</span>{" "}
+                        <span className="text-primaryGreen">Log Transaction</span>
                     </h1>
                     <p className="text-gray-700 mt-1">*All fields are mandatory, except mentioned as (optional).</p>
                 </div>
                 <button
                     onClick={addNewItem}
-                    className="flex items-center px-4 py-2 bg-white border border-green-600 rounded-full text-green-600 hover:bg-green-50"
+                    className="flex items-center px-4 py-2 bg-cleanWhite border border-primaryGreen rounded-full text-primaryGreen hover:bg-lightGreen"
                 >
                     <Plus className="w-5 h-5 mr-1" />
                     Add Field
@@ -113,7 +113,7 @@ const TransactionForm = () => {
                         <input
                             type="text"
                             placeholder="Medicine name"
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primaryGreen"
                             value={item.name}
                             onChange={(e) => updateItemField(item.id, "name", e.target.value)}
                         />
@@ -121,7 +121,7 @@ const TransactionForm = () => {
                     <div className="col-span-3">
                         <input
                             type="number"
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primaryGreen"
                             value={item.price}
                             onChange={(e) => updateItemField(item.id, "price", Number.parseFloat(e.target.value) || 0)}
                         />
@@ -132,7 +132,7 @@ const TransactionForm = () => {
                         </button>
                         <input
                             type="text"
-                            className="w-16 mx-2 p-2 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+                            className="w-16 mx-2 p-2 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primaryGreen"
                             value={item.quantity}
                             onChange={(e) => updateItemField(item.id, "quantity", Number.parseInt(e.target.value) || 1)}
                         />
@@ -165,14 +165,14 @@ const TransactionForm = () => {
                         <span>{discountValue.toFixed(2)}</span>
                     </div>
                     <div className="mt-3 flex justify-between">
-                        <span className="text-green-600 font-bold text-xl">Total</span>
-                        <span className="text-green-600 font-bold text-xl">{totalAmount.toFixed(2)}</span>
+                        <span className="text-primaryGreen font-bold text-xl">Total</span>
+                        <span className="text-primaryGreen font-bold text-xl">{totalAmount.toFixed(2)}</span>
                     </div>
                 </div>
             </section>
 
             <section className="w-1/3 pl-6 flex flex-col justify-center space-y-3">
-                <button onClick={submitTransaction} className="px-8 py-3 bg-green-600 hover:bg-green-700 rounded-full text-white">
+                <button onClick={submitTransaction} className="px-8 py-3 bg-primaryGreen hover:bg-darkGreen rounded-full text-cleanWhite">
                     Save Transaction
                 </button>
                 <button className="px-8 py-3 bg-gray-300 hover:bg-gray-400 rounded-full text-gray-700">
