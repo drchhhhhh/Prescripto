@@ -1,7 +1,48 @@
-/* THIS IS THE GLOBAL CSS DO NOT DELETE THIS */
-/*@import "tailwindcss";*/
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-/* i fear di na magagamit */
+@import "tailwindcss";
 
+@theme {
+    --color-primaryGreen: #4CAF50;
+    --color-darkGreen: #388E3C;
+    --color-lightGreen: #C8E6C9;
+    --color-accentBlue: #03A9F4;
+    --color-darkGray: #424242;
+    --color-cleanWhite: #FFFFFF;
+
+    --color-lightBlue: #A8DCF4;
+    --color-lightBlue-dark: #84C4E0;
+
+    --color-mintGreen: #A8DCCC;
+    --color-mintGreen-dark: #83C9B0;
+
+    --color-peach: #F0BCBC;
+    --color-peach-dark: #DA9D9D;
+
+    --color-blueBorder: #03A9F5;
+    --color-greenBorder: #01A768;
+    --color-redBorder: #F0483E;
+
+    --font-poppins: Poppins, "sans-serif"
+}
+
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsRegular.ttf");
+    font-weight: normal;
+}
+  
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsBold.ttf");
+    font-weight: bold;
+}
+  
+@font-face {
+    font-family: Poppins;
+    src: url("./assets/fonts/PoppinsSemiBold.ttf");
+    font-weight: 600;
+}
+
+#root {
+    height: 100%;
+    margin: 0;
+  }
