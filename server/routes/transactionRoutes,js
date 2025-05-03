@@ -1,0 +1,24 @@
+const express = require('express');
+const router = express.Router();
+const transactionController = require('../controllers/transactionController');
+const { verifyToken } = require('../middleware/auth');
+
+// Apply middleware to all routes
+router.use(verifyToken);
+
+// Create transaction
+router.post('/', transactionController.createTransaction);
+
+// Get transaction by ID
+router.get('/:id', transactionController.getTransactionById);
+
+// Get transactions by branch
+router.get('/branch/:branchId', transactionController.getTransactionsByBranch);
+
+// Get transactions by date range
+router.get('/date-range', transactionController.getTransactionsByDateRange);
+
+// Generate receipt
+router.get('/:id/receipt', transactionController.generateReceipt);
+
+module.exports = router;
