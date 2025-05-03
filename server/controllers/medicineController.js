@@ -1,144 +1,107 @@
-const Medicine = require('../models/medicine');
-const Category = require('../models/category');
+import Medicine from '../models/Medicine.js';
 
-// Get all medicines with optional filters
-exports.getAllMedicines = async (req, res) => {
+// Get all medicines
+export const getAllMedicines = async (req, res) => {
   try {
-    const { name, category, expiring } = req.query;
-    
-    const query = {};
-    
-    // Apply filters if provided
-    if (name) {
-      query.name = { $regex: name, $options: 'i' };
-    }
-    
-    if (category) {
-      query.category = category;
-    }
-    
-    if (expiring === 'true') {
-      // Get medicines expiring in the next 30 days
-      const today = new Date();
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      
-      query.expiration_date = {
-        $lte: thirtyDaysFromNow,
-        $gte: today
-      };
-    }
-    
-    const medicines = await Medicine.find(query).populate('category');
-    
-    return res.status(200).json(medicines);
+    const medicines = await Medicine.find();
+    res.status(200).json(medicines);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Get medicine by ID
-exports.getMedicineById = async (req, res) => {
+export const getMedicineById = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const medicine = await Medicine.findById(id).populate('category');
-    
+    const medicine = await Medicine.findById(req.params.id);
     if (!medicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
-    
-    return res.status(200).json(medicine);
+    res.status(200).json(medicine);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Create medicine (Admin only)
-exports.createMedicine = async (req, res) => {
+// Create new medicine
+export const createMedicine = async (req, res) => {
   try {
-    const { name, category, price, expiration_date } = req.body;
-    
-    // Check if category exists
-    const categoryExists = await Category.findById(category);
-    
-    if (!categoryExists) {
-      return res.status(404).json({ message: 'Category not found' });
-    }
-    
-    // Create medicine
-    const newMedicine = new Medicine({
+    const { name, category, price, quantity, expirationDate } = req.body;
+
+    const medicine = await Medicine.create({
       name,
       category,
       price,
-      expiration_date
+      quantity,
+      expirationDate
     });
-    
-    await newMedicine.save();
-    
-    return res.status(201).json(newMedicine);
+
+    res.status(201).json(medicine);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Update medicine (Admin only)
-exports.updateMedicine = async (req, res) => {
+// Update medicine
+export const updateMedicine = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { name, category, price, expiration_date } = req.body;
+    const { name, category, price, quantity, expirationDate } = req.body;
     
-    const medicine = await Medicine.findById(id);
-    
+    const medicine = await Medicine.findById(req.params.id);
     if (!medicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
-    
-    // If category is provided, check if it exists
-    if (category) {
-      const categoryExists = await Category.findById(category);
-      
-      if (!categoryExists) {
-        return res.status(404).json({ message: 'Category not found' });
-      }
-      
-      medicine.category = category;
-    }
-    
-    // Update medicine
+
+    // Update medicine fields
     if (name) medicine.name = name;
-    if (price) medicine.price = price;
-    if (expiration_date) medicine.expiration_date = expiration_date;
+    if (category) medicine.category = category;
+    if (price !== undefined) medicine.price = price;
+    if (quantity !== undefined) medicine.quantity = quantity;
+    if (expirationDate) medicine.expirationDate = expirationDate;
     
-    medicine.updated_at = Date.now();
-    await medicine.save();
-    
-    return res.status(200).json(medicine);
+    medicine.updatedAt = Date.now();
+
+    const updatedMedicine = await medicine.save();
+    res.status(200).json(updatedMedicine);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Delete medicine (Admin only)
-exports.deleteMedicine = async (req, res) => {
+// Delete medicine
+export const deleteMedicine = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const medicine = await Medicine.findById(id);
-    
+    const medicine = await Medicine.findById(req.params.id);
     if (!medicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
-    
+
     await medicine.deleteOne();
-    
-    return res.status(200).json({ message: 'Medicine deleted successfully' });
+    res.status(200).json({ message: 'Medicine deleted successfully' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Get medicines by expiration status
+export const getMedicinesByExpirationStatus = async (req, res) => {
+  try {
+    const today = new Date();
+    const thirtyDaysFromNow = new Date(today);
+    thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+    const expired = await Medicine.find({ expirationDate: { $lt: today } });
+    const expiringSoon = await Medicine.find({
+      expirationDate: { $gte: today, $lte: thirtyDaysFromNow }
+    });
+    const valid = await Medicine.find({ expirationDate: { $gt: thirtyDaysFromNow } });
+
+    res.status(200).json({
+      expired,
+      expiringSoon,
+      valid
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

@@ -1,40 +1,64 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
 
-const TransactionSchema = new Schema({
-  receipt_number: {
+const transactionSchema = new mongoose.Schema({
+  receiptNumber: {
     type: String,
     required: true,
     unique: true
   },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  branch: {
-    type: Schema.Types.ObjectId,
-    ref: 'Branch',
-    required: true
-  },
-  total_amount: {
+  items: [{
+    medicine: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Medicine',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    price: {
+      type: Number,
+      required: true
+    }
+  }],
+  totalAmount: {
     type: Number,
     required: true
   },
-  transaction_date: {
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  createdAt: {
     type: Date,
     default: Date.now
-  },
-  payment_method: {
-    type: String,
-    default: 'CASH'
-  },
-  items: [{
-    type: Schema.Types.ObjectId,
-    ref: 'TransactionItem'
-  }]
-}, {
-  timestamps: false
+  }
 });
 
-module.exports = mongoose.model('Transaction', TransactionSchema);
+// Generate receipt number before saving
+transactionSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    
+    // Get count of transactions for today to generate sequential number
+    const count = await mongoose.models.Transaction.countDocuments({
+      createdAt: {
+        $gte: new Date(date.setHours(0, 0, 0, 0)),
+        $lt: new Date(date.setHours(23, 59, 59, 999))
+      }
+    });
+    
+    // Format: YYMMDD-XXXX where XXXX is sequential number
+    this.receiptNumber = `${year}${month}${day}-${(count + 1).toString().padStart(4, '0')}`;
+  }
+  next();
+});
+
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+export default Transaction;

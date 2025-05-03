@@ -1,120 +1,98 @@
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+import User from '../models/User.js';
 
 // Get all users (Admin only)
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password_hash');
-    
-    return res.status(200).json(users);
+    const users = await User.find().select('-password');
+    res.status(200).json(users);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Get user by ID (Admin only)
-exports.getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const user = await User.findById(id).select('-password_hash');
-    
+    const user = await User.findById(req.params.id).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
-    return res.status(200).json(user);
+    res.status(200).json(user);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Create user (Admin only)
-exports.createUser = async (req, res) => {
+// Create new user (Admin only)
+export const createUser = async (req, res) => {
   try {
     const { username, password, role } = req.body;
-    
-    // Check if username already exists
-    const existingUser = await User.findOne({ username });
-    
-    if (existingUser) {
+
+    // Check if user already exists
+    const userExists = await User.findOne({ username });
+    if (userExists) {
       return res.status(400).json({ message: 'Username already exists' });
     }
-    
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create user
-    const newUser = new User({
-      username,
-      password_hash: hashedPassword,
-      role: role || 'STAFF'
-    });
-    
-    await newUser.save();
-    
-    return res.status(201).json({
-      id: newUser._id,
-      username: newUser.username,
-      role: newUser.role
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
-  }
-};
 
-// Update user (Admin only)
-exports.updateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { username, role, password } = req.body;
-    
-    const user = await User.findById(id);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Update user data
-    if (username) user.username = username;
-    if (role) user.role = role;
-    if (password) {
-      user.password_hash = await bcrypt.hash(password, 10);
-    }
-    
-    user.updated_at = Date.now();
-    await user.save();
-    
-    return res.status(200).json({
-      id: user._id,
+    // Create new user
+    const user = await User.create({
+      username,
+      password,
+      role
+    });
+
+    res.status(201).json({
+      _id: user._id,
       username: user.username,
       role: user.role
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Update user (Admin only)
+export const updateUser = async (req, res) => {
+  try {
+    const { username, role } = req.body;
+    
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user fields
+    if (username) user.username = username;
+    if (role) user.role = role;
+    
+    // Update password if provided
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      role: updatedUser.role
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Delete user (Admin only)
-exports.deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const user = await User.findById(id);
-    
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
+
     await user.deleteOne();
-    
-    return res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
