@@ -1,37 +1,54 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
 
-const MedicineSchema = new Schema({
+const medicineSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   category: {
-    type: Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true
+    type: String,
+    required: true,
+    trim: true
   },
   price: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
-  expiration_date: {
+  quantity: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  expirationDate: {
     type: Date,
     required: true
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now
   },
-  updated_at: {
+  updatedAt: {
     type: Date,
     default: Date.now
-  }
-}, {
-  timestamps: { 
-    createdAt: 'created_at', 
-    updatedAt: 'updated_at' 
   }
 });
 
-module.exports = mongoose.model('Medicine', MedicineSchema);
+// Virtual for expiration status
+medicineSchema.virtual('expirationStatus').get(function() {
+  const today = new Date();
+  const daysUntilExpiration = Math.ceil((this.expirationDate - today) / (1000 * 60 * 60 * 24));
+  
+  if (daysUntilExpiration <= 0) return 'expired';
+  if (daysUntilExpiration <= 30) return 'expiring-soon';
+  return 'valid';
+});
+
+// Set the virtuals to true to include them in the JSON output
+medicineSchema.set('toJSON', { virtuals: true });
+medicineSchema.set('toObject', { virtuals: true });
+
+const Medicine = mongoose.model('Medicine', medicineSchema);
+
+export default Medicine;
