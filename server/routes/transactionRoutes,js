@@ -1,24 +1,27 @@
-const express = require('express');
+import express from 'express';
+import { 
+  getAllTransactions, 
+  getTransactionById, 
+  getTransactionByReceiptNumber,
+  getTransactionsByDateRange
+} from '../controllers/transactionController.js';
+import { protect } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const transactionController = require('../controllers/transactionController');
-const { verifyToken } = require('../middleware/auth');
 
-// Apply middleware to all routes
-router.use(verifyToken);
+// All routes require authentication
+router.use(protect);
 
-// Create transaction
-router.post('/', transactionController.createTransaction);
+// Route: GET /api/transactions
+router.get('/', getAllTransactions);
 
-// Get transaction by ID
-router.get('/:id', transactionController.getTransactionById);
+// Route: GET /api/transactions/date
+router.get('/date', getTransactionsByDateRange);
 
-// Get transactions by branch
-router.get('/branch/:branchId', transactionController.getTransactionsByBranch);
+// Route: GET /api/transactions/receipt/:receiptNumber
+router.get('/receipt/:receiptNumber', getTransactionByReceiptNumber);
 
-// Get transactions by date range
-router.get('/date-range', transactionController.getTransactionsByDateRange);
+// Route: GET /api/transactions/:id
+router.get('/:id', getTransactionById);
 
-// Generate receipt
-router.get('/:id/receipt', transactionController.generateReceipt);
-
-module.exports = router;
+export default router;

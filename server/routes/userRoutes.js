@@ -1,24 +1,31 @@
-const express = require('express');
+import express from 'express';
+import { 
+  getAllUsers, 
+  getUserById, 
+  createUser, 
+  updateUser, 
+  deleteUser 
+} from '../controllers/userController.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const userController = require('../controllers/userController');
-const { verifyToken, isAdmin } = require('../middleware/auth');
 
-// Apply middleware to all routes
-router.use(verifyToken, isAdmin);
+// All routes require authentication and admin privileges
+router.use(protect, adminOnly);
 
-// Get all users
-router.get('/', userController.getAllUsers);
+// Route: GET /api/users
+router.get('/', getAllUsers);
 
-// Get user by ID
-router.get('/:id', userController.getUserById);
+// Route: GET /api/users/:id
+router.get('/:id', getUserById);
 
-// Create user
-router.post('/', userController.createUser);
+// Route: POST /api/users
+router.post('/', createUser);
 
-// Update user
-router.put('/:id', userController.updateUser);
+// Route: PUT /api/users/:id
+router.put('/:id', updateUser);
 
-// Delete user
-router.delete('/:id', userController.deleteUser);
+// Route: DELETE /api/users/:id
+router.delete('/:id', deleteUser);
 
-module.exports = router;
+export default router;

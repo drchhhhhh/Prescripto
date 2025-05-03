@@ -1,18 +1,16 @@
-const express = require('express');
+import express from 'express';
+import { login, getCurrentUser, logout } from '../controllers/authController.js';
+import { protect } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const authController = require('../controllers/authController');
-const { verifyToken } = require('../middleware/auth');
 
-// Login
-router.post('/login', authController.login);
+// Route: POST /api/auth/login
+router.post('/login', login);
 
-// Logout
-router.post('/logout', authController.logout);
+// Route: GET /api/auth/me
+router.get('/me', protect, getCurrentUser);
 
-// Refresh token
-router.post('/refresh-token', verifyToken, authController.refreshToken);
+// Route: POST /api/auth/logout
+router.post('/logout', protect, logout);
 
-// Change password
-router.put('/change-password', verifyToken, authController.changePassword);
-
-module.exports = router;
+export default router;
