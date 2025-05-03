@@ -1,184 +1,371 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router';
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import Header from "../../components/Header";
+"use client"
+
+import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import { FaMagnifyingGlass, FaSort, FaSortUp, FaSortDown, FaChevronDown } from "react-icons/fa6"
+import Header from "../../components/Header"
+
+type Transaction = {
+  receiptNo: string
+  date: string
+  medicineName: string
+  quantity: number
+  unitPrice: number
+  totalAmount: number
+}
+
+type SortDirection = "asc" | "desc" | "none"
+type SortableField = "receiptNo" | "date" | "medicineName" | "quantity" | "unitPrice" | "totalAmount"
 
 const TransactionHistory = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('- Select Group -');
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortConfig, setSortConfig] = useState<{
+    field: SortableField
+    direction: SortDirection
+  }>({ field: "date", direction: "desc" })
+  const [filterOption, setFilterOption] = useState<string>("")
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false)
 
-  // Sample transaction data (can be replaced with actual data fetching logic)
-  const transactionData = [
-    {
-      date: '2025-04-23',
-      medicineName: 'Augmentin 625 Duo',
-      receiptNo: '001',
-      qty: 5,
-      expirationDate: '2025-06-21',
-      unitPrice: 8.00,
-      total: 40.00
-    },
-    {
-      date: '2025-04-23',
-      medicineName: 'Azithral 500 Tablet',
-      receiptNo: '002',
-      qty: 3,
-      expirationDate: '2026-10-21',
-      unitPrice: 9.00,
-      total: 27.00
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      const mockData: Transaction[] = [
+        {
+          receiptNo: "001",
+          date: "2025-04-23",
+          medicineName: "Augmentin 625 Duo",
+          quantity: 5,
+          unitPrice: 8.0,
+          totalAmount: 40.0,
+        },
+        {
+          receiptNo: "002",
+          date: "2025-04-23",
+          medicineName: "Azithral 500 Tablet",
+          quantity: 3,
+          unitPrice: 9.0,
+          totalAmount: 27.0,
+        },
+        {
+          receiptNo: "003",
+          date: "2025-04-22",
+          medicineName: "Ascoril LS Syrup",
+          quantity: 1,
+          unitPrice: 12.5,
+          totalAmount: 12.5,
+        },
+        {
+          receiptNo: "004",
+          date: "2025-04-21",
+          medicineName: "Azee 500 Tablet",
+          quantity: 2,
+          unitPrice: 15.75,
+          totalAmount: 31.5,
+        },
+        {
+          receiptNo: "005",
+          date: "2025-04-20",
+          medicineName: "Allegra 120mg Tablet",
+          quantity: 4,
+          unitPrice: 7.25,
+          totalAmount: 29.0,
+        },
+        {
+          receiptNo: "006",
+          date: "2025-04-19",
+          medicineName: "Alex Syrup",
+          quantity: 1,
+          unitPrice: 18.0,
+          totalAmount: 18.0,
+        },
+        {
+          receiptNo: "007",
+          date: "2025-04-18",
+          medicineName: "Arnozyclov 625 Tablet",
+          quantity: 3,
+          unitPrice: 11.5,
+          totalAmount: 34.5,
+        },
+        {
+          receiptNo: "008",
+          date: "2025-04-17",
+          medicineName: "Avil 25 Tablet",
+          quantity: 6,
+          unitPrice: 3.5,
+          totalAmount: 21.0,
+        },
+      ]
+      setTransactions(mockData)
+      setFilteredTransactions(mockData)
     }
-  ];
+    fetchTransactions()
+  }, [])
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Implement search functionality here
-  };
+  useEffect(() => {
+    const filtered = transactions.filter(
+      (transaction) =>
+        transaction.receiptNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transaction.date.includes(searchTerm) ||
+        transaction.medicineName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transaction.quantity.toString().includes(searchTerm) ||
+        transaction.unitPrice.toString().includes(searchTerm) ||
+        transaction.totalAmount.toString().includes(searchTerm),
+    )
+    setFilteredTransactions(filtered)
+  }, [searchTerm, transactions])
 
-  const handleFilterChange = (e) => {
-    setSelectedFilter(e.target.value);
-    // Implement filtering logic here
-  }; 
+  const handleSort = (field: SortableField) => {
+    let direction: SortDirection = "asc"
+    if (sortConfig.field === field) {
+      if (sortConfig.direction === "asc") direction = "desc"
+      else if (sortConfig.direction === "desc") direction = "none"
+    }
+    setSortConfig({ field, direction })
+  }
+
+  useEffect(() => {
+    if (sortConfig.direction === "none") {
+      setFilteredTransactions([...transactions])
+      return
+    }
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+      let aValue: any = a[sortConfig.field]
+      let bValue: any = b[sortConfig.field]
+      if (sortConfig.field === "date") {
+        aValue = new Date(aValue)
+        bValue = new Date(bValue)
+      }
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1
+      return 0
+    })
+    setFilteredTransactions(sortedTransactions)
+  }, [sortConfig])
+
+  const getSortIcon = (field: SortableField) => {
+    if (sortConfig.field !== field) return <FaSort className="ml-1 opacity-50" />
+    switch (sortConfig.direction) {
+      case "asc":
+        return <FaSortUp className="ml-1" />
+      case "desc":
+        return <FaSortDown className="ml-1" />
+      default:
+        return <FaSort className="ml-1 opacity-50" />
+    }
+  }
+
+  const handleFilterSelect = (option: string) => {
+    setFilterOption(option)
+    setIsFilterOpen(false)
+
+    const sorted = [...transactions]
+
+    switch (option) {
+      case "newest":
+        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        break
+      case "oldest":
+        sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        break
+      case "name-asc":
+        sorted.sort((a, b) => a.medicineName.localeCompare(b.medicineName))
+        break
+      case "name-desc":
+        sorted.sort((a, b) => b.medicineName.localeCompare(a.medicineName))
+        break
+      default:
+        break
+    }
+
+    setFilteredTransactions(sorted)
+  }
 
   return (
     <>
       <Header />
-      <main className="bg-primaryBG w-full min-h-screen p-5 font-poppins">
-        {/* Top Section */}
-        <section className='w-full flex flex-row justify-between items-center'>
-          <div className="flex flex-col">
-            <div className="flex flex-row gap-2 items-center">
-              <Link className='text-darkGray text-2xl font-bold' to="/transaction">Transaction</Link>
-              <h1 className='text-darkGray text-xl font-bold'>{'>'}</h1>
-              <h1 className='text-darkGreen text-2xl font-bold'>History</h1>
-            </div>
-            <h3>View transaction history of the pharmacy.</h3>
-          </div>
-        </section>
-
-        {/* Search and Filter Section */}
-        <section className='flex flex-row justify-between items-center mt-5 gap-4'>
-          <form 
-            onSubmit={handleSearch}
-            className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm" 
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Medicine History..."
-              className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
-            />
-            <button type="submit" className="text-gray-500 hover:text-gray-700 transition" aria-label="Search">
-              <FaMagnifyingGlass />
-            </button>
-          </form>
-
-          <div className="relative">
-            <select
-              value={selectedFilter}
-              onChange={handleFilterChange}
-              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:border-primaryGreen text-gray-700 cursor-pointer w-64"
-            >
-              <option>- Select Group -</option>
-              <option>Date (Newest)</option>
-              <option>Date (Oldest)</option>
-              <option>Price (High to Low)</option>
-              <option>Price (Low to High)</option>
-              <option>Medicine Name (A-Z)</option>
-              <option>Medicine Name (Z-A)</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-              </svg>
-            </div>
-          </div>
-        </section>
-
-        {/* Transaction Table Section */}
-        <section className='flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 w-full mt-5'>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Receipt No.
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Medicine Name
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Qty
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Expiration Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Unit Price
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {transactionData.map((transaction, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.date}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.receiptNo}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.medicineName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.qty}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.expirationDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.unitPrice.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {transaction.total.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-        {/* Pagination Section */}
-        <section>
-          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3">
-            <div className="text-sm text-gray-700">
-              Showing 1 - 8 results of 298
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                &lt;
-              </button>
-              <div className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white">
-                Page 01
-                <svg className="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+      <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins">
+        <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1">
+          {/* Top Section */}
+          <section className="flex flex-row justify-between items-center py-5">
+            <div className="flex flex-col">
+              <div className="flex flex-row gap-2 items-center">
+                <Link className="text-darkGray text-2xl font-bold" to="/transactions">
+                  Transactions
+                </Link>
+                <h1 className="text-darkGray text-xl font-bold">{">"}</h1>
+                <h1 className="text-darkGreen text-2xl font-bold">Transaction History</h1>
               </div>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                &gt;
-              </button>
+              <h3 className="text-gray-600">Record of all transactions in the system.</h3>
             </div>
-          </div>
-        </section>
+            <Link
+              className="bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100"
+              to="/transaction/log"
+            >
+              + New Transaction
+            </Link>
+          </section>
+
+          {/* Search and Filter */}
+          <section className="flex flex-row justify-between items-center mt-2">
+            <form
+              className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="submit" className="text-gray-500 hover:text-gray-700 transition" aria-label="Search">
+                <FaMagnifyingGlass />
+              </button>
+            </form>
+
+            <div className="relative">
+              <button
+                className="flex items-center justify-between bg-white border border-gray-300 rounded-md px-4 py-2 min-w-[200px]"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              >
+                <span className="text-gray-700">
+                  {filterOption === "newest"
+                    ? "Newest to Oldest"
+                    : filterOption === "oldest"
+                      ? "Oldest to Newest"
+                      : filterOption === "name-asc"
+                        ? "Medicine Name (A-Z)"
+                        : filterOption === "name-desc"
+                          ? "Medicine Name (Z-A)"
+                          : "- Select Group -"}
+                </span>
+                <FaChevronDown className="ml-2 text-gray-500" />
+              </button>
+
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                  <ul>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+                      onClick={() => handleFilterSelect("newest")}
+                    >
+                      Newest to Oldest
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+                      onClick={() => handleFilterSelect("oldest")}
+                    >
+                      Oldest to Newest
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+                      onClick={() => handleFilterSelect("name-asc")}
+                    >
+                      Medicine Name (A-Z)
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+                      onClick={() => handleFilterSelect("name-desc")}
+                    >
+                      Medicine Name (Z-A)
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Transaction Table */}
+          <section className="flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 mt-5 flex-1 max-h-[400px]">
+            <div className="overflow-auto h-full">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("receiptNo")}
+                    >
+                      <div className="flex items-center">
+                        Transaction ID
+                        {getSortIcon("receiptNo")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("date")}
+                    >
+                      <div className="flex items-center">
+                        Date
+                        {getSortIcon("date")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("medicineName")}
+                    >
+                      <div className="flex items-center">
+                        Medicine Name
+                        {getSortIcon("medicineName")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("quantity")}
+                    >
+                      <div className="flex items-center">
+                        Quantity
+                        {getSortIcon("quantity")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("unitPrice")}
+                    >
+                      <div className="flex items-center">
+                        Unit Price
+                        {getSortIcon("unitPrice")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("totalAmount")}
+                    >
+                      <div className="flex items-center">
+                        Total
+                        {getSortIcon("totalAmount")}
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredTransactions.length > 0 ? (
+                    filteredTransactions.map((transaction, index) => (
+                      <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{transaction.receiptNo}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500">{transaction.date}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500">{transaction.medicineName}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500">{transaction.quantity}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500">Php {transaction.unitPrice.toFixed(2)}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500">Php {transaction.totalAmount.toFixed(2)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                        No transactions found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default TransactionHistory;
+export default TransactionHistory
