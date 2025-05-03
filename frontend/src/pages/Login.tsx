@@ -1,16 +1,37 @@
 import { useState } from 'react';
 import { User, Lock } from "lucide-react";
 import loginImage from '../assets/login.svg';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router';
 
 const LoginPage = () => {
+  const { handleLogin } = useAuth();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+  // THESE ARE USE FOR ERROR HANDLERS ADD A ERROR POPUPS WITH THESE
+  const [isWrongCreds, setIsWrongCreds] = useState(false);
+  const [isServerError, setIsServerError] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt with:', { userId, password });
-  };
+        try {
+            const isSuccess = await handleLogin(userId, password);
+
+            if (isSuccess) {
+                setIsWrongCreds(false)
+                setIsServerError(false)
+                navigate('/');
+            } else {
+                setIsWrongCreds(true)
+                console.error('Login failed. Please check your credentials.');
+            }
+        } catch (error) {
+            setIsServerError(true)
+            console.error('An error occurred. Please try again later.', error);
+        }
+  }
 
   return (
     <div className="flex min-h-screen font-poppins bg-gray-100">
@@ -26,7 +47,7 @@ const LoginPage = () => {
             Sign In
           </h2>
 
-          <form className="flex flex-col gap-5" onSubmit={handleLogin}>
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             {/* User ID */}
             <div className="flex flex-col gap-1">
               <label htmlFor="userId" className="text-[13px] font-medium text-gray-800 text-left">
