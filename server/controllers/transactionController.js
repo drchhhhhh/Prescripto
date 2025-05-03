@@ -74,14 +74,14 @@ export const getTransactionsByDateRange = async (req, res) => {
   }
 };
 
-// Create a new transaction
+// Create a new purchase transaction
 export const createTransaction = async (req, res) => {
   // Start a MongoDB session for transaction
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const { items } = req.body;
+    const { items, notes } = req.body;
     
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Items are required and must be an array' });
@@ -135,11 +135,17 @@ export const createTransaction = async (req, res) => {
       await medicine.save({ session });
     }
 
-    // Create the transaction
+    // Generate receipt number manually
+    const receiptNumber = await Transaction.generateReceiptNumber('purchase');
+
+    // Create the transaction with the generated receipt number
     const transaction = new Transaction({
+      receiptNumber,
+      transactionType: 'purchase',
       items: processedItems,
       totalAmount,
-      createdBy: req.user._id
+      createdBy: req.user._id,
+      notes: notes || 'Customer purchase'
     });
 
     await transaction.save({ session });
@@ -153,11 +159,38 @@ export const createTransaction = async (req, res) => {
       .populate('items.medicine', 'name category price')
       .populate('createdBy', 'username');
 
-    res.status(201).json(populatedTransaction);
+    // Generate receipt data
+    const receipt = {
+      receiptNumber: populatedTransaction.receiptNumber,
+      date: populatedTransaction.createdAt,
+      items: populatedTransaction.items.map(item => ({
+        name: item.medicine.name,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.quantity * item.price
+      })),
+      totalAmount: populatedTransaction.totalAmount,
+      cashier: populatedTransaction.createdBy.username,
+      notes: populatedTransaction.notes
+    };
+
+    res.status(201).json({
+      transaction: populatedTransaction,
+      receipt
+    });
   } catch (error) {
     // Abort transaction in case of error
     await session.abortTransaction();
     session.endSession();
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error', details: error.message });
+    }
+    
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+    
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

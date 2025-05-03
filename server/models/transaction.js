@@ -6,6 +6,11 @@ const transactionSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  transactionType: {
+    type: String,
+    enum: ['purchase', 'restock'],
+    required: true
+  },
   items: [{
     medicine: {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,30 +39,32 @@ const transactionSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  notes: {
+    type: String
   }
 });
 
-// Generate receipt number before saving
-transactionSchema.pre('save', async function(next) {
-  if (this.isNew) {
-    const date = new Date();
-    const year = date.getFullYear().toString().slice(-2);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    
-    // Get count of transactions for today to generate sequential number
-    const count = await mongoose.models.Transaction.countDocuments({
-      createdAt: {
-        $gte: new Date(date.setHours(0, 0, 0, 0)),
-        $lt: new Date(date.setHours(23, 59, 59, 999))
-      }
-    });
-    
-    // Format: YYMMDD-XXXX where XXXX is sequential number
-    this.receiptNumber = `${year}${month}${day}-${(count + 1).toString().padStart(4, '0')}`;
-  }
-  next();
-});
+// Static method to generate receipt number
+transactionSchema.statics.generateReceiptNumber = async function(transactionType) {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  
+  // Get count of transactions for today to generate sequential number
+  const count = await this.countDocuments({
+    createdAt: {
+      $gte: new Date(date.setHours(0, 0, 0, 0)),
+      $lt: new Date(date.setHours(23, 59, 59, 999))
+    }
+  });
+  
+  // Format: YYMMDD-XXXX where XXXX is sequential number
+  // Add prefix based on transaction type: P for purchase, R for restock
+  const prefix = transactionType === 'purchase' ? 'P' : 'R';
+  return `${prefix}${year}${month}${day}-${(count + 1).toString().padStart(4, '0')}`;
+};
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
