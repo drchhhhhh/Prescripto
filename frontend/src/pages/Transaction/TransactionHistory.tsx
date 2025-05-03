@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { FaMagnifyingGlass, FaSort, FaSortUp, FaSortDown, FaChevronDown } from "react-icons/fa6"
+import { FaMagnifyingGlass, FaChevronDown } from "react-icons/fa6"
 import Header from "../../components/Header"
 
 type Transaction = {
@@ -145,14 +145,14 @@ const TransactionHistory = () => {
   }, [sortConfig])
 
   const getSortIcon = (field: SortableField) => {
-    if (sortConfig.field !== field) return <FaSort className="ml-1 opacity-50" />
+    if (sortConfig.field !== field) return <></>
     switch (sortConfig.direction) {
       case "asc":
-        return <FaSortUp className="ml-1" />
+        return <></>
       case "desc":
-        return <FaSortDown className="ml-1" />
+        return <></>
       default:
-        return <FaSort className="ml-1 opacity-50" />
+        return <></>
     }
   }
 
@@ -283,59 +283,23 @@ const TransactionHistory = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 sticky top-0">
                   <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("receiptNo")}
-                    >
-                      <div className="flex items-center">
-                        Transaction ID
-                        {getSortIcon("receiptNo")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Transaction ID
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("date")}
-                    >
-                      <div className="flex items-center">
-                        Date
-                        {getSortIcon("date")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("medicineName")}
-                    >
-                      <div className="flex items-center">
-                        Medicine Name
-                        {getSortIcon("medicineName")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Medicine Name
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("quantity")}
-                    >
-                      <div className="flex items-center">
-                        Quantity
-                        {getSortIcon("quantity")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Quantity
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("unitPrice")}
-                    >
-                      <div className="flex items-center">
-                        Unit Price
-                        {getSortIcon("unitPrice")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Unit Price
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort("totalAmount")}
-                    >
-                      <div className="flex items-center">
-                        Total
-                        {getSortIcon("totalAmount")}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total
                     </th>
                   </tr>
                 </thead>
