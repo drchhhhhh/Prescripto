@@ -7,7 +7,7 @@ import {
   deleteMedicine,
   getMedicinesByExpirationStatus
 } from '../controllers/medicineController.js';
-import { protect, adminOnly } from '../middleware/authMiddleware.js';
+import { protect, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 
