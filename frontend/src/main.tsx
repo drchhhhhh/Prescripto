@@ -10,6 +10,7 @@ import InventoryAddMedicine from './pages/Inventory/InventoryAddMedicine.tsx'
 import TransactionForm from './pages/Transaction/TransactionLog.tsx'
 import TransactionHistory from './pages/Transaction/TransactionHistory.tsx'
 import InventoryGroups from './pages/Inventory/InventoryGroups.tsx'
+import { AuthProvider } from './contexts/AuthContext.tsx'
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )
