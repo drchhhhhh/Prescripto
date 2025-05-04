@@ -1,12 +1,14 @@
 import { Link } from 'react-router';
 import { useState } from 'react';
+import { endpoints } from '../../config/config';
 
 const InventoryAddMedicine = () => {
     const [form, setForm] = useState({
-        medicineName: "",
-        medicineId: "",
-        medicineGroup: "",
+        name: "",
+        category: "",
+        price: "",
         quantity: "",
+        expirationDate: "",
         desc: "",
         sideEffects: "",
     })
@@ -17,7 +19,18 @@ const InventoryAddMedicine = () => {
           [e.target.name]: e.target.value,
         });
       };
-      
+    
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(endpoints.createMed, {
+                method: "POST",
+                body: JSON.stringify({
+                    ...form
+                })
+            })
+        }
+    }
 
     return (
         <main className="bg-primaryBG w-full min-h-screen px-5 pt-2">
@@ -35,7 +48,7 @@ const InventoryAddMedicine = () => {
                 </div>
             </section>
             
-            <form className="flex flex-col w-full gap-4 mt-4">
+            <form className="flex flex-col w-full gap-4 mt-4" onSubmit={handleSubmit}>
                 <div className="flex flex-wrap gap-4">
                     {/* Medicine Name */}
                     <div className="flex flex-col flex-1 min-w-[200px]">
@@ -44,7 +57,7 @@ const InventoryAddMedicine = () => {
                         </label>
                         <input
                             type="text"
-                            name="medicineName"
+                            name="name"
                             onChange={handleChange}
                             className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                         />
@@ -53,11 +66,11 @@ const InventoryAddMedicine = () => {
                     {/* Medicine ID */}
                     <div className="flex flex-col flex-1 min-w-[200px]">
                         <label className="text-sm font-medium text-gray-700 mb-1">
-                            Medicine ID*
+                            Medicine Price*
                         </label>
                         <input
                             type="text"
-                            name="medicineId"
+                            name="price"
                             onChange={handleChange}
                             className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                         />
@@ -70,7 +83,7 @@ const InventoryAddMedicine = () => {
                             Medicine Group {"(Optional)"}
                         </label>
                         <select
-                            name="medicineGroup"
+                            name="category"
                             onChange={handleChange}
                             className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                         >
