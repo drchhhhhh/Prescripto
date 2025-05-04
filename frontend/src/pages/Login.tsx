@@ -73,7 +73,7 @@ const LoginPage = () => {
             <div className="pt-4 flex justify-center">
               <button
                 type="submit"
-                className={`w-[167px] h-[46px] px-6 py-3 text-white font-semibold text-[16px] rounded-full transition-colors duration-300 ${
+                className={`w-[167px] h-[46px] px-6 py-3 text-white font-semibold text-[16px] rounded-md transition-colors duration-300 ${
                   isHovered ? 'bg-green-500' : 'bg-green-700'
                 }`}
                 onMouseEnter={() => setIsHovered(true)}
