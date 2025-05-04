@@ -128,7 +128,7 @@ export default function Navbar() {
               <ul className="bg-primaryGreen text-cleanWhite rounded-md mt-1">
                 <li>
                   <button
-                    onClick={() => navigate('/inventory/InventoryItems')}
+                    onClick={() => navigate('/inventory/item-list')}
                     className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
                   >
                     List of Medicines
@@ -136,7 +136,7 @@ export default function Navbar() {
                 </li>
                 <li>
                   <button
-                    onClick={() => navigate('/Inventory/InventoryGroups')}
+                    onClick={() => navigate('/Inventory/groups')}
                     className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
                   >
                     Medicine Groups

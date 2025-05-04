@@ -3,21 +3,26 @@
 
 import { useState } from "react"
 import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react"
+import Header from "../components/Header"
 import { useNavigate } from 'react-router-dom';
+
 
 
 const Dashboard = () => {
 const [showReportDropdown, setShowReportDropdown] = useState(false)
 const navigate = useNavigate();
 
+
 const toggleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown)
 }
 
 
+
+
 return (
     <>
-   
+    <Header/>
     <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins">
         <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 py-6">
         <div className="flex justify-between items-center mb-6">
@@ -53,6 +58,8 @@ return (
         </div>
 
 
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Inventory Status Card */}
             <div className="bg-cleanWhite rounded-lg overflow-hidden shadow-sm border border-green-100">
@@ -66,13 +73,15 @@ return (
                 <p className="text-gray-600 mt-1">Inventory Status</p>
             </div>
             <div className="bg-green-50 py-2 px-4 hover:bg-lightGreen cursor-pointer">
-                <button onClick={() => navigate('/inventory/groups')} 
-                className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen"> 
+                <button onClick={() => navigate('/inventory/groups')}
+                className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen">
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Revenue Card */}
@@ -91,13 +100,15 @@ return (
                 </div>
             </div>
             <div className="bg-yellow-50 py-2 px-4 hover:bg-yellow-100 cursor-pointer">
-                <button  onClick={() => navigate('/transaction/history')} 
+                <button  onClick={() => navigate('/transaction/history')}
                 className="w-full flex items-center justify-center text-yellow-600 text-sm font-medium hover:text-yellow-700">
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Medicines Available Card */}
@@ -112,13 +123,15 @@ return (
                 <p className="text-gray-600 mt-1">Medicines Available</p>
             </div>
             <div className="bg-blue-50 py-2 px-4 hover:bg-blue-100 cursor-pointer">
-                <button onClick={() => navigate('/inventory/item-list')} 
+                <button onClick={() => navigate('/inventory/item-list')}
                 className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
                 Visit Inventory
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Medicine Shortage Card */}
@@ -143,6 +156,8 @@ return (
         </div>
 
 
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Inventory Section */}
             <div className="bg-green-50 rounded-lg shadow-sm p-6">
@@ -161,6 +176,8 @@ return (
                 </div>
             </div>
             </div>
+
+
 
 
             {/* Quick Report Section */}
@@ -182,6 +199,8 @@ return (
             </div>
 
 
+
+
             {/* My Pharmacy Section */}
             <div className="bg-green-50 rounded-lg shadow-sm p-6 text-center">
             <div className="flex justify-between flex-col items-center mb-4">
@@ -199,6 +218,8 @@ return (
                 </div>
             </div>
             </div>
+
+
 
 
             {/* Customers Section */}
@@ -226,5 +247,11 @@ return (
 }
 
 
+
+
 export default Dashboard
+
+
+
+
 
