@@ -1,9 +1,8 @@
-//aayusin pa itsura
 "use client"
 
 import type React from "react"
 
-import { X, CheckCircle, AlertCircle } from "lucide-react"
+import { CheckCircle, AlertCircle } from "lucide-react"
 import type { MedicineItem } from "../pages/Transaction/TransactionLog"
 
 interface TransactionModalProps {
@@ -45,28 +44,27 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   })
 
   return (
-    <div className="fixed inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-50">
-      <div className="absolute"></div>
-      {valid ? (
-        <article className="w-[900px] h-[500px] bg-green-50 rounded-lg p-6 max-w-2xl z-10 relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-700 hover:text-black">
-            <X className="w-6 h-6" />
-          </button>
-          <h2 className="text-2xl font-semibold text-center mb-6">Transaction Details</h2>
-          <section className="flex justify-between mb-6">
-            <div>
-              <p className="font-medium">Date & Time</p>
-              <p>
-                {formattedDate} | {formattedTime}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium">Receipt No.</p>
-              <p>{receiptNumber}</p>
-            </div>
-          </section>
-          <div className="grid grid-cols-2 gap-8">
-            <section>
+    <div className="fixed inset-0 flex items-center justify-center z-50 font-poppins">
+      <div className="fixed inset-0 bg-black bg-opacity-50"></div>
+      <article
+        className={`w-[900px] bg-lightGreen rounded-lg p-6 z-10 relative ${valid ? "bg-lightGreen" : "bg-white"}`}
+      >
+        {valid ? (
+          <div className="flex w-full h-full bg-lightGreen">
+            {/* Left side - Transaction Details */}
+            <div className="w-1/2  flex flex-col justify-between ">
+              <h2 className="text-2xl font-semibold mb-6 text-center text-primaryGreen">Transaction Details</h2>
+              <div className="mb-4">
+                <div className="flex justify-between mb-2">
+                  <div className="font-medium">Date & Time</div>
+                  <div>{formattedDate} | {formattedTime}</div>
+                </div>
+                <div className="flex justify-between mb-4 pb-4 border-b">
+                  <div className="font-medium">Receipt No.</div>
+                  <div>{receiptNumber}</div>
+                </div>
+              </div>
+              
               <div className="mb-4">
                 <table className="w-full">
                   <thead>
@@ -87,6 +85,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                   </tbody>
                 </table>
               </div>
+              
               <dl className="mt-8">
                 <div className="flex justify-between mb-1">
                   <dt className="font-medium">Subtotal</dt>
@@ -105,8 +104,10 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                   <dd>{total.toFixed(2)}</dd>
                 </div>
               </dl>
-            </section>
-            <section className="flex flex-col items-center justify-center">
+            </div>
+            
+            {/* Right side - Confirmation */}
+            <div className="w-1/2 pl-8 flex flex-col items-center justify-center">
               <div className="w-24 h-24 rounded-full bg-green-600 flex items-center justify-center mb-4">
                 <CheckCircle className="w-16 h-16 text-white" />
               </div>
@@ -114,24 +115,21 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
               <button onClick={onClose} className="px-8 py-3 bg-green-600 rounded-full text-white hover:bg-green-700">
                 Return
               </button>
-            </section>
+            </div>
           </div>
-        </article>
-      ) : (
-        <article className="w-[900px] h-[500px] bg-white rounded-lg p-8 z-10 flex flex-col items-center relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-700 hover:text-black">
-            <X className="w-6 h-6" />
-          </button>
-          <div className="w-24 h-24 rounded-full bg-red-500 flex items-center justify-center mb-6">
-            <AlertCircle className="w-16 h-16 text-white" />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[350px]">
+            <div className="w-24 h-24 rounded-full bg-red-500 flex items-center justify-center mb-6">
+              <AlertCircle className="w-16 h-16 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-center mb-4">Error Logging Transaction</h2>
+            <p className="text-center text-gray-700 mb-6">Please make sure all required fields are filled correctly.</p>
+            <button onClick={onClose} className="px-8 py-3 bg-gray-200 rounded-full text-gray-700 hover:bg-gray-300">
+              Close
+            </button>
           </div>
-          <h2 className="text-2xl font-bold text-center mb-4">Error Logging Transaction</h2>
-          <p className="text-center text-gray-700 mb-6">Please make sure all required fields are filled correctly.</p>
-          <button onClick={onClose} className="px-8 py-3 bg-gray-200 rounded-full text-gray-700 hover:bg-gray-300">
-            Close
-          </button>
-        </article>
-      )}
+        )}
+      </article>
     </div>
   )
 }
