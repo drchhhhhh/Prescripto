@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaMagnifyingGlass, FaSort, FaSortUp, FaSortDown } from "react-icons/fa6";
 import Header from '../../components/Header';
+import { endpoints } from '../../config/config';
 
 type Medicine = {
   name: string;
@@ -21,32 +22,42 @@ const InventoryItems = () => {
     field: SortableField;
     direction: SortDirection;
   }>({ field: 'name', direction: 'none' });
+  const token = localStorage.getItem("token")
 
-  // Simulate fetching data from an API
   useEffect(() => {
-    // In a real app, you would fetch this from your backend
-    const fetchMedicines = async () => {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const mockData: Medicine[] = [
-        { name: 'Augmentin 625 Duo Tablet', id: 'D06ID232435454', group: 'Generic Medicine', stock: 350 },
-        { name: 'Azthrai 500 Tablet', id: 'D06ID232435451', group: 'Generic Medicine', stock: 20 },
-        { name: 'Ascoril LS Syrup', id: 'D06ID232435452', group: 'Diabetes', stock: 85 },
-        { name: 'Azee 500 Tablet', id: 'D06ID232435450', group: 'Generic Medicine', stock: 75 },
-        { name: 'Allegra I2Omg Tablet', id: 'D06ID232435455', group: 'Diabetes', stock: 44 },
-        { name: 'Alex Syrup', id: 'D06ID232435456', group: 'Generic Medicine', stock: 65 },
-        { name: 'Arnozyclov 625 Tablet', id: 'D06ID232435457', group: 'Generic Medicine', stock: 150 },
-        { name: 'Avil 25 Tablet', id: 'D06ID232435458', group: 'Generic Medicine', stock: 270 },
-        { name: 'Avil 25 Tablet', id: 'D06ID232435458', group: 'Generic Medicine', stock: 270 },
-      ];
-      
-      setMedicines(mockData);
-      setFilteredMedicines(mockData);
+    const getAllItems = async () => {
+      try {
+        const response = await fetch(endpoints.getMedAll, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch medicines');
+        }
+
+        const data = await response.json();
+        
+        const transformedMedicines = data.map((item: any) => ({
+          name: item.name,
+          id: item.id,
+          group: item.category,
+          stock: item.quantity
+        }));
+
+        setMedicines(transformedMedicines);
+        setFilteredMedicines(transformedMedicines);
+        
+      } catch (error) {
+        console.error("Error fetching medicines:", error);
+      }
     };
 
-    fetchMedicines();
-  }, []);
+    getAllItems();
+  }, [token]);
 
   // Handle search filtering
   useEffect(() => {
