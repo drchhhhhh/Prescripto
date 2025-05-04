@@ -64,7 +64,7 @@ const TransactionForm = () => {
   return (
     <>
       <Header />
-      <main className="bg-primaryBG rounded-lg shadow-sm relative font-poppins flex flex-col h-[calc(100vh-80px)]">
+      <main className="bg-white rounded-lg shadow-sm relative font-poppins flex flex-col h-[calc(100vh-80px)]">
         {" "}
         <section className="p-6 flex flex-col h-full">
           <div className="flex items-center justify-between mb-4">
@@ -77,7 +77,7 @@ const TransactionForm = () => {
             </div>
             <button
               onClick={addNewItem}
-              className="flex items-center px-4 py-2 rounded-md bg-cleanWhite border border-primaryGreen text-primaryGreen hover:bg-lightGreen"
+              className="flex items-center px-4 py-2 bg-cleanWhite border border-primaryGreen rounded-full text-primaryGreen hover:bg-lightGreen"
             >
               <Plus className="w-5 h-5 mr-1" />
               Add Field
@@ -174,11 +174,11 @@ const TransactionForm = () => {
             <aside className="w-1/3 pl-6 flex flex-col justify-center space-y-3">
               <button
                 onClick={submitTransaction}
-                className="px-8 py-3 rounded-md bg-primaryGreen hover:bg-darkGreen text-cleanWhite"
+                className="px-8 py-3 bg-primaryGreen hover:bg-darkGreen rounded-full text-cleanWhite"
               >
                 Save Transaction
               </button>
-              <button className="px-8 py-3 rounded-md bg-gray-300 hover:bg-gray-400 text-gray-700">Cancel</button>
+              <button className="px-8 py-3 bg-gray-300 hover:bg-gray-400 rounded-full text-gray-700">Cancel</button>
             </aside>
           </div>
 
