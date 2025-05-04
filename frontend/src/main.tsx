@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout.tsx';
 import LoginPage from './pages/Login.tsx';
 import Dashboard from './pages/Dashboard.tsx';
+import StockStatus from './pages/Inventory/StockStatus.tsx';
 import InventoryPage from './pages/Inventory/Inventory.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 import InventoryItems from './pages/Inventory/InventoryItems.tsx';
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <Dashboard />,
+      },
+      {
+        path: 'inventory/stockstatus',
+        element: <StockStatus />,
       },
       {
         path: 'inventory',

@@ -3,10 +3,12 @@
 
 import { useState } from "react"
 import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react"
+import { useNavigate } from 'react-router-dom';
 
 
 const Dashboard = () => {
 const [showReportDropdown, setShowReportDropdown] = useState(false)
+const navigate = useNavigate();
 
 const toggleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown)
@@ -64,7 +66,8 @@ return (
                 <p className="text-gray-600 mt-1">Inventory Status</p>
             </div>
             <div className="bg-green-50 py-2 px-4 hover:bg-lightGreen cursor-pointer">
-                <button className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen">
+                <button onClick={() => navigate('/inventory/inventorygroups')} 
+                className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen"> 
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -88,7 +91,8 @@ return (
                 </div>
             </div>
             <div className="bg-yellow-50 py-2 px-4 hover:bg-yellow-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-yellow-600 text-sm font-medium hover:text-yellow-700">
+                <button  onClick={() => navigate('/transaction/history')} 
+                className="w-full flex items-center justify-center text-yellow-600 text-sm font-medium hover:text-yellow-700">
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -108,7 +112,8 @@ return (
                 <p className="text-gray-600 mt-1">Medicines Available</p>
             </div>
             <div className="bg-blue-50 py-2 px-4 hover:bg-blue-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
+                <button onClick={() => navigate('/inventory/inventoryitems')} 
+                className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
                 Visit Inventory
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -128,7 +133,8 @@ return (
                 <p className="text-gray-600 mt-1">Medicine Shortage</p>
             </div>
             <div className="bg-red-50 py-2 px-4 hover:bg-red-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600">
+                <button onClick={() => navigate('/inventory/stockstatus')}  
+                className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600">
                 Resolve Now
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
