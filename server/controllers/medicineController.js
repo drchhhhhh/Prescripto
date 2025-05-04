@@ -1,4 +1,6 @@
 import Medicine from '../models/Medicine.js';
+import Transaction from '../models/Transaction.js';
+import mongoose from 'mongoose';
 
 // Get all medicines
 export const getAllMedicines = async (req, res) => {
@@ -25,45 +27,118 @@ export const getMedicineById = async (req, res) => {
 
 // Create new medicine
 export const createMedicine = async (req, res) => {
-  try {
-    const { name, category, price, quantity, expirationDate } = req.body;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    const medicine = await Medicine.create({
+  try {
+    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body;
+
+    // Create the medicine
+    const medicine = new Medicine({
       name,
       category,
+      description: description || '',
+      sideEffects: sideEffects || 'No known side effects documented.',
       price,
       quantity,
       expirationDate
     });
 
+    await medicine.save({ session });
+
+    // Generate receipt number for the restock transaction
+    const receiptNumber = await Transaction.generateReceiptNumber('restock');
+
+    // Create a restock transaction
+    const transaction = new Transaction({
+      receiptNumber,
+      transactionType: 'restock',
+      items: [{
+        medicine: medicine._id,
+        quantity,
+        price
+      }],
+      totalAmount: price * quantity,
+      createdBy: req.user._id,
+      notes: notes || `Initial stock of ${name}`
+    });
+
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
     res.status(201).json(medicine);
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Update medicine
 export const updateMedicine = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const { name, category, price, quantity, expirationDate } = req.body;
+    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body;
     
-    const medicine = await Medicine.findById(req.params.id);
+    const medicine = await Medicine.findById(req.params.id).session(session);
     if (!medicine) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ message: 'Medicine not found' });
     }
+
+    // Check if quantity is being increased (restocking)
+    const isRestocking = quantity !== undefined && quantity > medicine.quantity;
+    const oldQuantity = medicine.quantity;
 
     // Update medicine fields
     if (name) medicine.name = name;
     if (category) medicine.category = category;
+    if (description !== undefined) medicine.description = description;
+    if (sideEffects !== undefined) medicine.sideEffects = sideEffects;
     if (price !== undefined) medicine.price = price;
     if (quantity !== undefined) medicine.quantity = quantity;
     if (expirationDate) medicine.expirationDate = expirationDate;
     
     medicine.updatedAt = Date.now();
 
-    const updatedMedicine = await medicine.save();
-    res.status(200).json(updatedMedicine);
+    await medicine.save({ session });
+
+    // If restocking, create a transaction
+    if (isRestocking) {
+      const restockQuantity = quantity - oldQuantity;
+      const currentPrice = price !== undefined ? price : medicine.price;
+
+      // Generate receipt number for the restock transaction
+      const receiptNumber = await Transaction.generateReceiptNumber('restock');
+
+      const transaction = new Transaction({
+        receiptNumber,
+        transactionType: 'restock',
+        items: [{
+          medicine: medicine._id,
+          quantity: restockQuantity,
+          price: currentPrice
+        }],
+        totalAmount: currentPrice * restockQuantity,
+        createdBy: req.user._id,
+        notes: notes || `Restocked ${medicine.name}`
+      });
+
+      await transaction.save({ session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json(medicine);
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

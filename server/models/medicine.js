@@ -11,6 +11,16 @@ const medicineSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  description: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  sideEffects: {
+    type: String,
+    trim: true,
+    default: 'No known side effects documented.'
+  },
   price: {
     type: Number,
     required: true,
