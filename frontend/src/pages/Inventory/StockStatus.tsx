@@ -23,7 +23,7 @@ const StockStatus = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([])
   const [filteredMedicines, setFilteredMedicines] = useState<Medicine[]>([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortConfig, setSortConfig] = useState<{
+  const [sortConfig] = useState<{
     field: SortableField
     direction: SortDirection
   }>({ field: "status", direction: "asc" })

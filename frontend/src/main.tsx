@@ -38,15 +38,15 @@ const router = createBrowserRouter([
         element: <InventoryPage />,
       },
       {
-        path: 'inventory/inventoryitems',
+        path: 'inventory/item-list',
         element: <InventoryItems />,
       },
       {
-        path: 'inventory/inventoryaddmedicine',
+        path: 'inventory/item-list/add',
         element: <InventoryAddMedicine />,
       },
       {
-        path: 'inventory/inventorygroups',
+        path: 'inventory/groups',
         element: <InventoryGroups />,
       },
       {

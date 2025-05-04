@@ -192,7 +192,7 @@ export default function Navbar() {
       <footer className="p-4 border-t border-gray-100">
         <button
           onClick={() => console.log('Logout')} // Replace with actual logout logic
-          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-full border border-primaryGreen text-primaryGreen"
+          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen"
         >
           <LogOut className="h-5 w-5 mr-3" />
           <span>Logout</span>

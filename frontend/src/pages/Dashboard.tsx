@@ -66,7 +66,7 @@ return (
                 <p className="text-gray-600 mt-1">Inventory Status</p>
             </div>
             <div className="bg-green-50 py-2 px-4 hover:bg-lightGreen cursor-pointer">
-                <button onClick={() => navigate('/inventory/inventorygroups')} 
+                <button onClick={() => navigate('/inventory/groups')} 
                 className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen"> 
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
@@ -112,7 +112,7 @@ return (
                 <p className="text-gray-600 mt-1">Medicines Available</p>
             </div>
             <div className="bg-blue-50 py-2 px-4 hover:bg-blue-100 cursor-pointer">
-                <button onClick={() => navigate('/inventory/inventoryitems')} 
+                <button onClick={() => navigate('/inventory/item-list')} 
                 className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
                 Visit Inventory
                 <ArrowRight className="w-4 h-4 ml-1" />
