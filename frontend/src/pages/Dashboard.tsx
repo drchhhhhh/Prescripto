@@ -1,9 +1,7 @@
 "use client"
 
-
 import { useState } from "react"
 import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react"
-import { useNavigate } from 'react-router-dom';
 
 
 const Dashboard = () => {
@@ -17,7 +15,7 @@ const toggleReportDropdown = () => {
 
 return (
     <>
-   
+    <Header/>
     <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins">
         <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 py-6">
         <div className="flex justify-between items-center mb-6">
