@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { endpoints } from '../../config/config';
 
@@ -9,9 +9,11 @@ const InventoryAddMedicine = () => {
         price: "",
         quantity: "",
         expirationDate: "",
-        desc: "",
+        description: "",
         sideEffects: "",
     })
+    const token = localStorage.getItem('token')
+    const navigate = useNavigate()
 
     const handleChange = ( e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> ) => {
         setForm({
@@ -20,15 +22,38 @@ const InventoryAddMedicine = () => {
         });
       };
     
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const formData = {
+                ...form,
+                category: form.category || "none"
+            }
+
             const response = await fetch(endpoints.createMed, {
                 method: "POST",
-                body: JSON.stringify({
-                    ...form
-                })
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
             })
+
+            if (!response) {
+                throw new Error(`Error: ${response}`);
+            }
+            
+            if (response.ok) {
+                // CREATE A POPUP SAYING SUCCESSFULLY ADDED ITEM
+                navigate("/inventory")
+            }
+            
+
+            const data = await response.json()
+            console.log(data)
+            return data
+        } catch (error) {
+            console.error("Failed to add item:", error)
         }
     }
 
@@ -69,7 +94,7 @@ const InventoryAddMedicine = () => {
                             Medicine Price*
                         </label>
                         <input
-                            type="text"
+                            type="number"
                             name="price"
                             onChange={handleChange}
                             className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
@@ -98,13 +123,31 @@ const InventoryAddMedicine = () => {
                             Quantity in Number*
                         </label>
                         <input
-                            type="text"
+                            type="number"
                             name="quantity"
                             onChange={handleChange}
                             className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                         />
                     </div>
                 </div>
+
+                {/* Expiration Date */}
+                <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-col flex-1 min-w-[200px]">
+                        <label className="text-sm font-medium text-gray-700 mb-1">
+                            Expiration Date*
+                        </label>
+                        <input
+                            type="date"
+                            name="expirationDate"
+                            onChange={handleChange}
+                            className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
+                            required
+                            min={new Date().toISOString().split('T')[0]}
+                        />
+                    </div>
+                </div>
+
                 {/* How to Use */}
                 <div className="flex flex-col flex-1 min-w-[200px]">
                     <label className="text-sm font-medium text-gray-700 mb-1">
@@ -112,7 +155,7 @@ const InventoryAddMedicine = () => {
                     </label>
                     <input
                         type="text"
-                        name="desc"
+                        name="description"
                         onChange={handleChange}
                         className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen h-38"
                     />
@@ -130,7 +173,7 @@ const InventoryAddMedicine = () => {
                         className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen h-38"
                     />
                 </div>
-                <button className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>Add Item</button>
+                <button type="submit" className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>Add Item</button>
             </form>
         </main>
     );
