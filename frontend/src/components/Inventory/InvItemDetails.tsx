@@ -20,6 +20,7 @@ const InvItemDetails = () => {
     const token = localStorage.getItem("token")
     const [itemData, setItemData] = useState<MedicineItem | null>(null);
     const navigate = useNavigate()
+    const [isAdmin, setIsAdmin] = useState(false);
     
     useEffect(() => {
         const getItemDetails = async () => {
@@ -43,7 +44,31 @@ const InvItemDetails = () => {
             }
         }
 
+        const checkIfAdmin = async () => {
+            try {
+                const response = await fetch(endpoints.getUserId, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch medicines');
+                }
+
+                const data = await response.json();
+                console.log(data)
+          
+                setIsAdmin(true);
+            } catch (error) {
+                console.error("Error fetching medicine details: ", error)
+            }
+        }
+
         getItemDetails()
+        checkIfAdmin()
     }, [token, params.medicineId])
 
     const handleDelete = async () => {
@@ -144,7 +169,9 @@ const InvItemDetails = () => {
                         </div>
                     </div>
                 </section>
-                <button className="text-center font-bold bg-red-300 w-50 px-4 py-3 rounded-full border border-redBorder text-darkGray cursor-pointer hover:bg-red-500 hover:text-cleanWhite" onClick={handleDelete}>Delete Item</button>
+                {
+                    isAdmin ? (<button className="text-center font-bold bg-red-300 w-50 px-4 py-3 rounded-full border border-redBorder text-darkGray cursor-pointer hover:bg-red-500 hover:text-cleanWhite" onClick={handleDelete}>Delete Item</button>) : (<></>)
+                }
             </div>
         </main>
     );
