@@ -10,22 +10,24 @@ import { protect, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// All routes require authentication and admin privileges
-router.use(protect, adminOnly);
+// All routes require authentication
+router.use(protect);
 
+// Routes that don't require admin privileges
 // Route: GET /api/users
 router.get('/', getAllUsers);
 
 // Route: GET /api/users/:id
 router.get('/:id', getUserById);
 
+// Routes that require admin privileges
 // Route: POST /api/users
-router.post('/', createUser);
+router.post('/', adminOnly, createUser);
 
 // Route: PUT /api/users/:id
-router.put('/:id', updateUser);
+router.put('/:id', adminOnly, updateUser);
 
 // Route: DELETE /api/users/:id
-router.delete('/:id', deleteUser);
+router.delete('/:id', adminOnly, deleteUser);
 
 export default router;
