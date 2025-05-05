@@ -1,15 +1,23 @@
 "use client"
 
+
 import { useState } from "react"
 import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react"
 import Header from "../components/Header"
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Dashboard = () => {
 const [showReportDropdown, setShowReportDropdown] = useState(false)
+const navigate = useNavigate();
+
 
 const toggleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown)
 }
+
+
 
 
 return (
@@ -50,6 +58,8 @@ return (
         </div>
 
 
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Inventory Status Card */}
             <div className="bg-cleanWhite rounded-lg overflow-hidden shadow-sm border border-green-100">
@@ -63,12 +73,15 @@ return (
                 <p className="text-gray-600 mt-1">Inventory Status</p>
             </div>
             <div className="bg-green-50 py-2 px-4 hover:bg-lightGreen cursor-pointer">
-                <button className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen">
+                <button onClick={() => navigate('/inventory/groups')}
+                className="w-full flex items-center justify-center text-primaryGreen text-sm font-medium hover:text-darkGreen">
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Revenue Card */}
@@ -87,12 +100,15 @@ return (
                 </div>
             </div>
             <div className="bg-yellow-50 py-2 px-4 hover:bg-yellow-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-yellow-600 text-sm font-medium hover:text-yellow-700">
+                <button  onClick={() => navigate('/transaction/history')}
+                className="w-full flex items-center justify-center text-yellow-600 text-sm font-medium hover:text-yellow-700">
                 View Detailed Report
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Medicines Available Card */}
@@ -107,12 +123,15 @@ return (
                 <p className="text-gray-600 mt-1">Medicines Available</p>
             </div>
             <div className="bg-blue-50 py-2 px-4 hover:bg-blue-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
+                <button onClick={() => navigate('/inventory/item-list')}
+                className="w-full flex items-center justify-center text-blue-500 text-sm font-medium hover:text-blue-600">
                 Visit Inventory
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
+
+
 
 
             {/* Medicine Shortage Card */}
@@ -127,13 +146,16 @@ return (
                 <p className="text-gray-600 mt-1">Medicine Shortage</p>
             </div>
             <div className="bg-red-50 py-2 px-4 hover:bg-red-100 cursor-pointer">
-                <button className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600">
+                <button onClick={() => navigate('/inventory/stockstatus')}  
+                className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600">
                 Resolve Now
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
             </div>
             </div>
         </div>
+
+
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -156,6 +178,8 @@ return (
             </div>
 
 
+
+
             {/* Quick Report Section */}
             <div className="bg-green-50 rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-4 flex-col">
@@ -175,6 +199,8 @@ return (
             </div>
 
 
+
+
             {/* My Pharmacy Section */}
             <div className="bg-green-50 rounded-lg shadow-sm p-6 text-center">
             <div className="flex justify-between flex-col items-center mb-4">
@@ -192,6 +218,8 @@ return (
                 </div>
             </div>
             </div>
+
+
 
 
             {/* Customers Section */}
@@ -219,5 +247,11 @@ return (
 }
 
 
+
+
 export default Dashboard
+
+
+
+
 

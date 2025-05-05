@@ -128,7 +128,7 @@ export default function Navbar() {
               <ul className="bg-primaryGreen text-cleanWhite rounded-md mt-1">
                 <li>
                   <button
-                    onClick={() => navigate('/inventory/InventoryItems')}
+                    onClick={() => navigate('/inventory/item-list')}
                     className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
                   >
                     List of Medicines
@@ -136,7 +136,7 @@ export default function Navbar() {
                 </li>
                 <li>
                   <button
-                    onClick={() => navigate('/Inventory/InventoryGroups')}
+                    onClick={() => navigate('/Inventory/groups')}
                     className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
                   >
                     Medicine Groups
@@ -192,7 +192,7 @@ export default function Navbar() {
       <footer className="p-4 border-t border-gray-100">
         <button
           onClick={() => console.log('Logout')} // Replace with actual logout logic
-          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-full border border-primaryGreen text-primaryGreen"
+          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen"
         >
           <LogOut className="h-5 w-5 mr-3" />
           <span>Logout</span>
