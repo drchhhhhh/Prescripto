@@ -223,9 +223,6 @@ export default function InventoryGroups() {
                               <span className={`text-sm px-2 py-1 rounded-full ${colorClass}`}>
                                 Stock: {med.stock}
                               </span>
-                              <button className="text-sm bg-primaryGreen text-cleanWhite px-3 py-1 rounded-md hover:bg-darkGreen transition-colors">
-                                Add to Cart
-                              </button>
                             </div>
                           </div>
                         ))}

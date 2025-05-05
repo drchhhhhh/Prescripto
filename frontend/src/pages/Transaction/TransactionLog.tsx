@@ -81,7 +81,7 @@ const TransactionForm = () => {
             </div>
             <button
               onClick={addNewItem}
-              className="flex items-center px-4 py-2 bg-primaryBG border border-primaryGreen rounded-md text-primaryGreen hover:bg-lightGreen"
+              className="flex items-center px-4 py-2 bg-primaryGreen hover:bg-darkGreen ease-in duration-100 text-cleanWhite rounded-md"
             >
               <Plus className="w-5 h-5 mr-1" />
               Add Field
