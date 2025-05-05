@@ -29,7 +29,7 @@ const InventoryPage = () => {
                 <AiOutlineMedicineBox className='text-greenBorder text-6xl mt-2'/>
                 {/* ADD A COUNTER HERE HOW MANY GROUPS */}
                 <h1 className="text-xl">Medicine Groups</h1>
-                <Link to="/inventory/item-groups" className="bg-mintGreen text-center w-full p-1 border-t-2 border-greenBorder rounded-b-sm cursor-pointer hover:bg-mintGreen-dark ease-in duration-100">
+                <Link to="/inventory/groups" className="bg-mintGreen text-center w-full p-1 border-t-2 border-greenBorder rounded-b-sm cursor-pointer hover:bg-mintGreen-dark ease-in duration-100">
                     View Groups »
                 </Link>
             </div>

@@ -229,7 +229,7 @@ const InventoryItems = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <Link 
-                          to={`/inventory/item-list/${medicine.id}`}
+                          to={`/inventory/item-list/item/${medicine.id}`}
                           className="text-primaryGreen hover:text-darkGreen hover:underline"
                         >
                           View Full Detail

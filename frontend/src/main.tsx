@@ -14,6 +14,7 @@ import TransactionHistory from './pages/Transaction/TransactionHistory.tsx';
 import InventoryGroups from './pages/Inventory/InventoryGroups.tsx';
 
 import { AuthProvider } from './contexts/AuthContext.tsx'
+import InvItemDetails from './components/Inventory/InvItemDetails.tsx';
 
 const router = createBrowserRouter([
   {
@@ -34,15 +35,19 @@ const router = createBrowserRouter([
         element: <InventoryPage />,
       },
       {
-        path: 'inventory/inventoryitems',
+        path: 'inventory/item-list',
         element: <InventoryItems />,
       },
       {
-        path: 'inventory/inventoryaddmedicine',
+        path: 'inventory/item-list/item/:medicineId',
+        element: <InvItemDetails />,
+      },
+      {
+        path: 'inventory/item-list/add',
         element: <InventoryAddMedicine />,
       },
       {
-        path: 'inventory/inventorygroups',
+        path: 'inventory/groups',
         element: <InventoryGroups />,
       },
       {
@@ -64,6 +69,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )
