@@ -16,61 +16,70 @@ import InventoryGroups from './pages/Inventory/InventoryGroups.tsx';
 
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import InvItemDetails from './components/Inventory/InvItemDetails.tsx';
+import ProtectedRoute from './utils/ProtectedRoute.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />, // Wraps all children with Navbar
     errorElement: <NotFoundPage />,
     children: [
       {
-        index: true,
-        element: <div>HOME</div>,
+        path: '/login',
+        element: <LoginPage />,
       },
       {
-        path: 'dashboard',
-        element: <Dashboard />,
-      },
-      {
-        path: 'inventory/stockstatus',
-        element: <StockStatus />,
-      },
-      {
-        path: 'inventory',
-        element: <InventoryPage />,
-      },
-      {
-        path: 'inventory/item-list',
-        element: <InventoryItems />,
-      },
-      {
-        path: 'inventory/item-list/item/:medicineId',
-        element: <InvItemDetails />,
-      },
-      {
-        path: 'inventory/item-list/add',
-        element: <InventoryAddMedicine />,
-      },
-      {
-        path: 'inventory/groups',
-        element: <InventoryGroups />,
-      },
-      {
-        path: 'transaction/log',
-        element: <TransactionForm />,
-      },
-      {
-        path: 'transaction/history',
-        element: <TransactionHistory />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: <Layout />, // Layout now only wraps protected routes
+            children: [
+              {
+                index: true,
+                element: <div>HOME</div>,
+              },
+              {
+                path: 'dashboard',
+                element: <Dashboard />,
+              },
+              {
+                path: 'inventory/stockstatus',
+                element: <StockStatus />,
+              },
+              {
+                path: 'inventory',
+                element: <InventoryPage />,
+              },
+              {
+                path: 'inventory/item-list',
+                element: <InventoryItems />,
+              },
+              {
+                path: 'inventory/item-list/item/:medicineId',
+                element: <InvItemDetails />,
+              },
+              {
+                path: 'inventory/item-list/add',
+                element: <InventoryAddMedicine />,
+              },
+              {
+                path: 'inventory/groups',
+                element: <InventoryGroups />,
+              },
+              {
+                path: 'transaction/log',
+                element: <TransactionForm />,
+              },
+              {
+                path: 'transaction/history',
+                element: <TransactionHistory />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
 ]);
-
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

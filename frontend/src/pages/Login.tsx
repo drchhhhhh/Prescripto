@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { User, Lock } from "lucide-react";
 import loginImage from '../assets/login.svg';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 const LoginPage = () => {
   const { handleLogin } = useAuth();
@@ -10,9 +10,12 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   // THESE ARE USE FOR ERROR HANDLERS ADD A ERROR POPUPS WITH THESE
   const [isWrongCreds, setIsWrongCreds] = useState(false);
   const [isServerError, setIsServerError] = useState(false);
+
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +25,7 @@ const LoginPage = () => {
             if (isSuccess) {
                 setIsWrongCreds(false)
                 setIsServerError(false)
-                navigate('/');
+                navigate(from, { replace: true });
             } else {
                 setIsWrongCreds(true)
                 console.error('Login failed. Please check your credentials.');
