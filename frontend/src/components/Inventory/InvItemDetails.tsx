@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { endpoints } from "../../config/config";
 import Header from "../Header";
+import { getUserData } from "../../contexts/AuthContext";
 
 interface MedicineItem {
     name: string;
@@ -21,6 +22,7 @@ const InvItemDetails = () => {
     const [itemData, setItemData] = useState<MedicineItem | null>(null);
     const navigate = useNavigate()
     const [isAdmin, setIsAdmin] = useState(false);
+    const userData = getUserData(token);
     
     useEffect(() => {
         const getItemDetails = async () => {
@@ -46,20 +48,10 @@ const InvItemDetails = () => {
 
         const checkIfAdmin = async () => {
             try {
-                const response = await fetch(endpoints.getUserId, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                })
-    
-                if (!response.ok) {
-                    throw new Error('Failed to fetch medicines');
-                }
 
-                const data = await response.json();
-                console.log(data)
+                // ADD LOGIC IF ADMIN THINGY SO BUTTON APPEARS
+
+                console.log(userData)
           
                 setIsAdmin(true);
             } catch (error) {

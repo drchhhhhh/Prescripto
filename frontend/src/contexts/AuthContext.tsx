@@ -90,7 +90,7 @@ export const getUserData = async (token: string | null): Promise<string | null> 
         }
 
         const data = await response.json();
-        return data.username;
+        return data;
     } catch (error) {
         console.error("Error fetching user data:", error instanceof Error ? error.message : 'Unknown error');
         return null;
