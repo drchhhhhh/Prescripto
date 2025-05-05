@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useState } from 'react';
+import Header from "../../components/Header"
 
 const InventoryAddMedicine = () => {
     const [form, setForm] = useState({
@@ -20,7 +21,8 @@ const InventoryAddMedicine = () => {
       
 
     return (
-        <main className="bg-primaryBG w-full min-h-screen px-5 pt-2">
+        <main className="bg-primaryBG w-full min-h-screen px-5 pt-2 font-poppins">
+            <Header/>
             {/* Top Section */}
             <section className='w-full flex flex-row justify-between items-center'>
                 <div className="flex flex-col">

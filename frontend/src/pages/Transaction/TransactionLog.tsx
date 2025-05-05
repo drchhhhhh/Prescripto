@@ -64,7 +64,7 @@ const TransactionForm = () => {
   return (
     <>
       <Header />
-      <main className="bg-white rounded-lg shadow-sm relative font-poppins flex flex-col h-[calc(100vh-80px)]">
+      <main className="bg-primaryBG shadow-sm relative font-poppins flex flex-col h-[calc(100vh-80px)]">
         {" "}
         <section className="p-6 flex flex-col h-full">
           <div className="flex items-center justify-between mb-4">
