@@ -108,7 +108,7 @@ const TransactionHistory = () => {
   return (
     <>
       <Header />
-      <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins">
+      <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins pl-64">
         <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1">
           {/* Top Section */}
           <section className="flex flex-row justify-between items-center py-5">
