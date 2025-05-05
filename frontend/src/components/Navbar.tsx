@@ -17,14 +17,12 @@ import {
 export default function Navbar() {
   const navigate = useNavigate();
 
-
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-
   return (
-    <aside className="h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins">
+    <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins z-50">
       {/* Logo */}
       <header className="p-4 flex items-center border-b border-gray-100">
         <img src={Logo} alt="Prescripto Logo" className="h-8 w-auto"/>
@@ -75,7 +73,6 @@ export default function Navbar() {
         </div>
       </section>
 
-
       {/* Navigation */}
       <nav className="p-2 flex-1 overflow-y-auto">
         <ul>
@@ -88,7 +85,6 @@ export default function Navbar() {
               <span>Dashboard</span>
             </button>
           </li>
-
 
           {/* Inventory */}
           <li className="mb-1">
@@ -127,7 +123,6 @@ export default function Navbar() {
               </ul>
             )}
           </li>
-
 
           {/* Transaction */}
           <li>
@@ -169,12 +164,11 @@ export default function Navbar() {
         </ul>
       </nav>
 
-
       {/* Logout */}
       <footer className="p-4 border-t border-gray-100">
         <button
           onClick={() => console.log('Logout')} // Replace with actual logout logic
-          className="flex items-center px-4 py-3 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen"
+          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen"
         >
           <LogOut className="h-5 w-5 mr-3" />
           <span>Logout</span>
@@ -183,4 +177,3 @@ export default function Navbar() {
     </aside>
   );
 }
-
