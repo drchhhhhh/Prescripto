@@ -13,7 +13,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen font-poppins bg-gray-100">
+    <div className="flex min-h-screen font-poppins bg-primaryBG">
       <div className="w-[730px] h-[425px] m-auto flex rounded-lg overflow-hidden shadow-lg">
         {/* Left side - Image */}
         <div className="w-1/2 bg-gray-300 flex items-center justify-center">
@@ -22,7 +22,7 @@ const LoginPage = () => {
 
         {/* Right side - Login form */}
         <div className="w-1/2 bg-white p-6 flex flex-col justify-center">
-          <h2 className="text-[25px] font-semibold text-center text-green-700 mb-1">
+          <h2 className="text-[25px] font-semibold text-center text- mb-1">
             Sign In
           </h2>
 
@@ -73,8 +73,8 @@ const LoginPage = () => {
             <div className="pt-4 flex justify-center">
               <button
                 type="submit"
-                className={`w-[167px] h-[46px] px-6 py-3 text-white font-semibold text-[16px] rounded-full transition-colors duration-300 ${
-                  isHovered ? 'bg-green-500' : 'bg-green-700'
+                className={`w-[167px] h-[46px] px-6 py-3 text-white font-semibold text-[16px] rounded-md transition-colors duration-300 ${
+                  isHovered ? 'bg-darkGreen' : 'bg-primaryGreen'
                 }`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
