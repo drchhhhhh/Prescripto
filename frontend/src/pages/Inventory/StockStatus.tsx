@@ -191,7 +191,7 @@ const StockStatus = () => {
   return (
     <>
       <Header />
-      <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins">
+      <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins pl-64">
         <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1">
           {/* Top Section */}
           <section className="flex flex-row justify-between items-center py-5">
@@ -204,13 +204,7 @@ const StockStatus = () => {
                 <h1 className="text-darkGreen text-2xl font-bold">Medicine Shortage</h1>
               </div>
               <h3 className="text-gray-600">Manage stock levels and resolve medicine shortages.</h3>
-            </div>
-            <Link
-              className="bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100"
-              to="/inventory/add"
-            >
-              + Add New Medicine
-            </Link>
+            </div>    
           </section>
 
           {/* Search and Filter */}
