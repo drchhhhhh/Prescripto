@@ -1,31 +1,39 @@
-import express from 'express';
-import { 
-  getAllTransactions, 
-  getTransactionById, 
+import express from "express"
+import {
+  getAllTransactions,
+  getTransactionById,
   getTransactionByReceiptNumber,
   getTransactionsByDateRange,
-  createTransaction // Add this import
-} from '../controllers/transactionController.js';
-import { protect } from '../middleware/auth.js';
+  createTransaction,
+  getTransactionsByBranch,
+  getTransactionsForCurrentBranch,
+} from "../controllers/transactionController.js"
+import { protect } from "../middleware/auth.js"
 
-const router = express.Router();
+const router = express.Router()
 
 // All routes require authentication
-router.use(protect);
+router.use(protect)
 
 // Route: POST /api/transactions - Create a new transaction
-router.post('/', createTransaction);
+router.post("/", createTransaction)
 
 // Route: GET /api/transactions
-router.get('/', getAllTransactions);
+router.get("/", getAllTransactions)
 
 // Route: GET /api/transactions/date
-router.get('/date', getTransactionsByDateRange);
+router.get("/date", getTransactionsByDateRange)
 
 // Route: GET /api/transactions/receipt/:receiptNumber
-router.get('/receipt/:receiptNumber', getTransactionByReceiptNumber);
+router.get("/receipt/:receiptNumber", getTransactionByReceiptNumber)
+
+// Route: GET /api/transactions/branch/:branch - Get transactions for a specific branch
+router.get("/branch/:branch", getTransactionsByBranch)
+
+// Route: GET /api/transactions/my-branch - Get transactions for current user's branch
+router.get("/my-branch", getTransactionsForCurrentBranch)
 
 // Route: GET /api/transactions/:id
-router.get('/:id', getTransactionById);
+router.get("/:id", getTransactionById)
 
-export default router;
+export default router
