@@ -35,6 +35,11 @@ const medicineSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  branch: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now
