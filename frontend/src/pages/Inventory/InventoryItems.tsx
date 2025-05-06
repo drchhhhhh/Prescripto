@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaMagnifyingGlass, FaSort, FaSortUp, FaSortDown } from "react-icons/fa6";
+import { Store, ChevronDown } from "lucide-react"; // Added import for the missing icons
 import Header from '../../components/Header';
 
 type Medicine = {
@@ -21,6 +22,13 @@ const InventoryItems = () => {
     field: SortableField;
     direction: SortDirection;
   }>({ field: 'name', direction: 'none' });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [branchFilter, setBranchFilter] = useState('');
+
+  const handleFilterSelect = (branch: string) => {
+    setBranchFilter(branch);
+    setIsFilterOpen(false);
+  };
 
   // Simulate fetching data from an API
   useEffect(() => {
@@ -105,7 +113,7 @@ const InventoryItems = () => {
       default:
         return <FaSort className="ml-1 opacity-50" />;
     }
-  };
+  };  
 
   return (
     <>
@@ -131,10 +139,10 @@ const InventoryItems = () => {
             </Link>
           </section>
 
-          {/* Search and Filter Section */}
-          <section className='flex flex-row justify-between items-center mt-2'>
+          {/* Search and Filter Section - Updated to place them inline */}
+          <section className='flex flex-row justify-between items-center mt-2 gap-4'>
             <form
-              className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
+              className="flex items-center flex-grow max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
               onSubmit={(e) => e.preventDefault()}
             >
               <input
@@ -148,9 +156,56 @@ const InventoryItems = () => {
                 <FaMagnifyingGlass />
               </button>
             </form>
+
+            {/* Branch Filter - Moved inline with search bar */}
+            <div className="relative">
+              <button
+                className="flex items-center justify-between bg-primaryBG border border-primaryGreen rounded-md px-4 py-2 min-w-[200px] text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              >
+                <span>
+                  {branchFilter === "balagtas"
+                    ? "Balagtas Branch"
+                    : branchFilter === "alangilan"
+                    ? "Alangilan Branch"
+                    : branchFilter === "bayan"
+                    ? "Bayan Branch"
+                    : "Branch Filter"}
+                </span>
+                <ChevronDown className="ml-2" />
+              </button>
+
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                  <ul>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("balagtas")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Balagtas Branch
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("alangilan")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Alangilan Branch
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("bayan")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Bayan Branch
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </section>
 
-          {/* Item Display Section - Updated for proper sizing */}
+          {/* Item Display Section */}
           <section className='flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 mt-5 flex-1 max-h-[400px]'>
             <div className="overflow-auto h-full">
               <table className="min-w-full divide-y divide-gray-200">
@@ -239,6 +294,7 @@ const InventoryItems = () => {
             </div>
           </section>
         </div>
+        
       </main>
     </>
   )
