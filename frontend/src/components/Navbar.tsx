@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/logo.svg';
 import {
   ChevronDown,
@@ -13,13 +13,56 @@ import {
   User
 } from 'lucide-react';
 
-
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+  // Check if current path is in inventory or transaction routes
+  useEffect(() => {
+    if (currentPath.includes('/inventory')) {
+      setIsInventoryOpen(true);
+    }
+    if (currentPath.includes('/transaction')) {
+      setIsTransactionOpen(true);
+    }
+  }, [currentPath]);
+
+  // Function to check if a path is active
+  const isActive = (path: string) => {
+    return currentPath === path;
+  };
+
+  // Function to check if a path is in active group
+  const isInActiveGroup = (basePath: string) => {
+    return currentPath.includes(basePath);
+  };
+
+  // Handle dropdown toggle with exclusive behavior
+  const handleDropdownToggle = (dropdown: string) => {
+    if (dropdown === 'inventory') {
+      setIsInventoryOpen(prev => !prev);
+      setIsTransactionOpen(false);
+    } else if (dropdown === 'transaction') {
+      setIsTransactionOpen(prev => !prev);
+      setIsInventoryOpen(false);
+    }
+    setIsProfileMenuOpen(false);
+  };
+
+  // Close profile menu when clicking elsewhere
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      if (isProfileMenuOpen) setIsProfileMenuOpen(false);
+    };
+    
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [isProfileMenuOpen]);
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins z-50">
@@ -42,7 +85,10 @@ export default function Navbar() {
         </figure>
         <div className="relative">
           <button
-            onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsProfileMenuOpen((prev) => !prev);
+            }}
             className="p-1 rounded-full hover:bg-green-50"
             aria-label="Profile menu"
           >
@@ -54,7 +100,7 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={() => navigate('/profile')}
-                    className="block w-full text-left px-4 py-2 hover:bg-green-50 text-gray-700"
+                    className={`block w-full text-left px-4 py-2 ${isActive('/profile') ? 'bg-green-50 text-primaryGreen font-medium' : 'text-gray-700 hover:bg-green-50'}`}
                   >
                     Profile
                   </button>
@@ -62,7 +108,7 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={() => navigate('/settings')}
-                    className="block w-full text-left px-4 py-2 hover:bg-green-50 text-gray-700"
+                    className={`block w-full text-left px-4 py-2 ${isActive('/settings') ? 'bg-green-50 text-primaryGreen font-medium' : 'text-gray-700 hover:bg-green-50'}`}
                   >
                     Settings
                   </button>
@@ -79,7 +125,11 @@ export default function Navbar() {
           <li>
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full text-left rounded-md"
+              className={`flex items-center px-4 py-3 w-full text-left rounded-md cursor-pointer ${
+                isActive('/dashboard') 
+                  ? 'bg-green-50 text-primaryGreen font-medium' 
+                  : 'text-gray-700 hover:bg-green-50'
+              }`}
             >
               <Layout className="h-5 w-5 mr-3 text-primaryGreen" />
               <span>Dashboard</span>
@@ -89,8 +139,12 @@ export default function Navbar() {
           {/* Inventory */}
           <li className="mb-1">
             <button
-              className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-green-50 rounded-md"
-              onClick={() => setIsInventoryOpen((prev) => !prev)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-md cursor-pointer ${
+                isInActiveGroup('/inventory') 
+                  ? 'bg-green-50 text-primaryGreen font-medium' 
+                  : 'text-gray-700 hover:bg-green-50'
+              }`}
+              onClick={() => handleDropdownToggle('inventory')}
               aria-expanded={isInventoryOpen}
             >
               <div className="flex items-center">
@@ -107,15 +161,23 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={() => navigate('/inventory/item-list')}
-                    className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
+                    className={`block py-3 pl-10 w-full text-left rounded-md cursor-pointer ${
+                      isActive('/inventory/item-list') 
+                        ? 'bg-darkGreen font-medium' 
+                        : 'hover:bg-darkGreen'
+                    }`}
                   >
                     List of Medicines
                   </button>
                 </li>
                 <li>
                   <button
-                    onClick={() => navigate('/Inventory/groups')}
-                    className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
+                    onClick={() => navigate('/inventory/groups')}
+                    className={`block py-3 pl-10 w-full text-left rounded-md cursor-pointer ${
+                      isActive('/inventory/groups') 
+                        ? 'bg-darkGreen font-medium' 
+                        : 'hover:bg-darkGreen'
+                    }`}
                   >
                     Medicine Groups
                   </button>
@@ -127,8 +189,12 @@ export default function Navbar() {
           {/* Transaction */}
           <li>
             <button
-              className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-green-50 rounded-md"
-              onClick={() => setIsTransactionOpen((prev) => !prev)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-md cursor-pointer ${
+                isInActiveGroup('/transaction') 
+                  ? 'bg-green-50 text-primaryGreen font-medium' 
+                  : 'text-gray-700 hover:bg-green-50'
+              }`}
+              onClick={() => handleDropdownToggle('transaction')}
               aria-expanded={isTransactionOpen}
             >
               <div className="flex items-center">
@@ -145,7 +211,11 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={() => navigate('/transaction/log')}
-                    className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
+                    className={`block py-3 pl-10 w-full text-left rounded-md cursor-pointer ${
+                      isActive('/transaction/log') 
+                        ? 'bg-darkGreen font-medium' 
+                        : 'hover:bg-darkGreen'
+                    }`}
                   >
                     Log Transaction
                   </button>
@@ -153,7 +223,11 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={() => navigate('/transaction/history')}
-                    className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
+                    className={`block py-3 pl-10 w-full text-left rounded-md cursor-pointer ${
+                      isActive('/transaction/history') 
+                        ? 'bg-darkGreen font-medium' 
+                        : 'hover:bg-darkGreen'
+                    }`}
                   >
                     History
                   </button>

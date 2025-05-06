@@ -6,19 +6,15 @@ import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react
 import Header from "../components/Header"
 import { useNavigate } from 'react-router-dom';
 
-
-
 const Dashboard = () => {
-const [showReportDropdown, setShowReportDropdown] = useState(false)
-const navigate = useNavigate();
+    const [branchFilter, setBranchFilter] = useState("")
+    const [isFilterOpen, setIsFilterOpen] = useState(false)
+    const navigate = useNavigate()
 
-
-const toggleReportDropdown = () => {
-    setShowReportDropdown(!showReportDropdown)
+const handleFilterSelect = (branch: string) => {
+    setBranchFilter(branch)
+    setIsFilterOpen(false)
 }
-
-
-
 
 return (
     <>
@@ -33,29 +29,46 @@ return (
            
             <div className="relative">
             <button
-                onClick={toggleReportDropdown}
-                className="flex items-center px-4 py-2 bg-cleanWhite border border-primaryGreen rounded-md text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
+                className="flex items-center justify-between bg-primaryBG border border-primaryGreen rounded-md px-4 py-2 min-w-[200px] text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
-                Branch Filter
-                <ChevronDown className="w-4 h-4 ml-2" />
+                <span>
+                {branchFilter === "batangas"
+                    ? "Batangas City Branch"
+                    : branchFilter === "laguna"
+                    ? "Laguna Branch"
+                    : branchFilter === "quezon"
+                        ? "Quezon Province Branch"
+                        : "Branch Filter"}
+                </span>
+                <ChevronDown className="ml-2" />
             </button>
-           
-            {showReportDropdown && (
-                <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10">
-                <div className="py-1">
-                    <button className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-primaryGreen cursor-pointer">
-                    <FileSpreadsheet className="w-5 h-5 mr-2" />
-                    Batangas City Branch
-                    </button>
-                    <button className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-primaryGreen cursor-pointer">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Laguna Branch
-                    </button>
-                    <button className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-primaryGreen cursor-pointer">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Quezon Province Branch
-                    </button>
-                </div>
+
+            {isFilterOpen && (
+                <div className="absolute right-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                <ul>
+                    <li
+                        className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                        onClick={() => handleFilterSelect("batangas")}
+                    >
+                        <FileSpreadsheet className="w-5 h-5 mr-2" />
+                        Batangas City Branch
+                    </li>
+                    <li
+                        className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                        onClick={() => handleFilterSelect("laguna")}
+                    >
+                        <FileText className="w-5 h-5 mr-2" />
+                        Laguna Branch
+                    </li>
+                    <li
+                        className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                        onClick={() => handleFilterSelect("quezon")}
+                    >
+                        <FileText className="w-5 h-5 mr-2" />
+                        Quezon Province Branch
+                    </li>
+                </ul>
                 </div>
             )}
             </div>
