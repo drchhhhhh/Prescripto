@@ -40,37 +40,6 @@ export default function Navbar() {
             <p className="text-xs text-primaryGreen">Pharmacist</p>
           </figcaption>
         </figure>
-        <div className="relative">
-          <button
-            onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-            className="p-1 rounded-full hover:bg-green-50"
-            aria-label="Profile menu"
-          >
-            <User className="h-5 w-5 text-primaryGreen" />
-          </button>
-          {isProfileMenuOpen && (
-            <nav className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-              <ul>
-                <li>
-                  <button
-                    onClick={() => navigate('/profile')}
-                    className="block w-full text-left px-4 py-2 hover:bg-green-50 text-gray-700"
-                  >
-                    Profile
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/settings')}
-                    className="block w-full text-left px-4 py-2 hover:bg-green-50 text-gray-700"
-                  >
-                    Settings
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-        </div>
       </section>
 
       {/* Navigation */}
