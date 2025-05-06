@@ -2,7 +2,7 @@
 
 
 import { useState } from "react"
-import { ArrowRight, ChevronDown, FileText, FileSpreadsheet } from "lucide-react"
+import { ArrowRight, ChevronDown, Store } from "lucide-react"
 import Header from "../components/Header"
 import { useNavigate } from 'react-router-dom';
 
@@ -33,12 +33,12 @@ return (
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
                 <span>
-                {branchFilter === "batangas"
-                    ? "Batangas City Branch"
-                    : branchFilter === "laguna"
-                    ? "Laguna Branch"
-                    : branchFilter === "quezon"
-                        ? "Quezon Province Branch"
+                {branchFilter === "balagtas"
+                    ? "Balagtas Branch"
+                    : branchFilter === "alangilan"
+                    ? "Alangilan Branch"
+                    : branchFilter === "bayan"
+                        ? "Bayan Branch"
                         : "Branch Filter"}
                 </span>
                 <ChevronDown className="ml-2" />
@@ -49,24 +49,24 @@ return (
                 <ul>
                     <li
                         className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                        onClick={() => handleFilterSelect("batangas")}
+                        onClick={() => handleFilterSelect("balagtas")}
                     >
-                        <FileSpreadsheet className="w-5 h-5 mr-2" />
-                        Batangas City Branch
-                    </li>
-                    <li
-                        className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                        onClick={() => handleFilterSelect("laguna")}
-                    >
-                        <FileText className="w-5 h-5 mr-2" />
-                        Laguna Branch
-                    </li>
-                    <li
-                        className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                        onClick={() => handleFilterSelect("quezon")}
-                    >
-                        <FileText className="w-5 h-5 mr-2" />
-                        Quezon Province Branch
+                            <Store className="w-5 h-5 mr-2" />
+                            Balagtas Branch
+                        </li>
+                        <li
+                            className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                            onClick={() => handleFilterSelect("alangilan")}
+                        >
+                            <Store className="w-5 h-5 mr-2" />
+                            Alangilan Branch
+                        </li>
+                        <li
+                            className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                            onClick={() => handleFilterSelect("bayan")}
+                        >
+                            <Store className="w-5 h-5 mr-2" />
+                            Bayan Branch
                     </li>
                 </ul>
                 </div>
@@ -149,7 +149,7 @@ return (
             </div>
             <div className="bg-red-50 py-2.5 px-4 hover:bg-red-100 cursor-pointer">
                 <button onClick={() => navigate('/inventory/stockstatus')}  
-                className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600">
+                className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600 cursor-pointer">
                 Resolve Now
                 <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -162,7 +162,7 @@ return (
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Inventory Section */}
-            <div className="bg-green-50 rounded-lg shadow-sm p-6">
+            <div className="bg-cleanWhite rounded-lg shadow-sm p-6">
             <div className="flex justify-between flex-col items-center mb-4">
                 <h2 className="text-xl font-semibold text-darkGray">Inventory</h2>
             </div>
@@ -183,7 +183,7 @@ return (
 
 
             {/* Quick Report Section */}
-            <div className="bg-green-50 rounded-lg shadow-sm p-6">
+            <div className="bg-cleanWhite rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-4 flex-col">
                 <h2 className="text-xl font-semibold text-darkGray">Quick Report</h2>
             </div>
@@ -204,7 +204,7 @@ return (
 
 
             {/* My Pharmacy Section */}
-            <div className="bg-green-50 rounded-lg shadow-sm p-6 text-center">
+            <div className="bg-cleanWhite rounded-lg shadow-sm p-6 text-center">
             <div className="flex justify-between flex-col items-center mb-4">
                 <h2 className="text-xl font-semibold text-darkGray ">My Pharmacy</h2>
             </div>
@@ -224,16 +224,16 @@ return (
 
 
 
-            {/* Customers Section */}
-            <div className="bg-green-50 rounded-lg shadow-sm p-6 text-center">
+            {/* Transactions Section */}
+            <div className="bg-cleanWhite rounded-lg shadow-sm p-6 text-center">
             <div className="flex justify-between flex-col items-center mb-4 text-center">
-                <h2 className="text-xl font-semibold text-darkGray">Customers</h2>    
+                <h2 className="text-xl font-semibold text-darkGray">Transactions</h2>    
             </div>
            
             <div className="grid grid-cols-2 gap-6">
                 <div>
                 <h3 className="text-2xl font-bold text-darkGray">845</h3>
-                <p className="text-gray-600 text-sm">Total no of Customers</p>
+                <p className="text-gray-600 text-sm">Total no. of Transactions</p>
                 </div>
                 <div>
                 <h3 className="text-2xl font-bold text-darkGray">Adalimumab</h3>
