@@ -131,7 +131,7 @@ export default function InventoryGroups() {
     <>
       <Header />
       <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins pl-64">
-        <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 py-6">
+        <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 py-5">
           {/* Top Section - Match dashboard layout */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex flex-col">

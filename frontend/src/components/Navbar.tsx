@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router';
 import Logo from '../assets/logo.svg';
 import {
   ChevronDown,
@@ -13,19 +14,20 @@ import {
   User
 } from 'lucide-react';
 
-
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
+  const isDashboardOpen = currentPath === '/dashboard';
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins z-50">
       {/* Logo */}
       <header className="p-4 flex items-center border-b border-gray-100">
-        <img src={Logo} alt="Prescripto Logo" className="h-8 w-auto"/>
+        <img src={Logo} alt="Prescripto Logo" className="h-8 w-auto" />
         <span className="ml-2 text-xl font-semibold text-primaryGreen">Prescripto</span>
       </header>
 
@@ -48,7 +50,11 @@ export default function Navbar() {
           <li>
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full text-left rounded-md"
+              className={`flex items-center px-4 py-3 w-full text-left rounded-md ${
+                isDashboardOpen
+                  ? 'bg-green-100 text-primaryGreen font-semibold'
+                  : 'text-gray-700 hover:bg-green-50'
+              }`}
             >
               <Layout className="h-5 w-5 mr-3 text-primaryGreen" />
               <span>Dashboard</span>
@@ -58,18 +64,21 @@ export default function Navbar() {
           {/* Inventory */}
           <li className="mb-1">
             <button
-              className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-green-50 rounded-md"
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-md ${
+                isInventoryOpen ? 'bg-green-100 text-primaryGreen font-semibold' : 'text-gray-700 hover:bg-green-50'
+              }`}
               onClick={() => setIsInventoryOpen((prev) => !prev)}
               aria-expanded={isInventoryOpen}
             >
               <div className="flex items-center">
                 <Package className="h-5 w-5 mr-3 text-primaryGreen" />
-                <span>Inventory</span>
+                <Link className='text-darkGray' to="/inventory">Inventory</Link>
               </div>
-              {isInventoryOpen ?
-                <ChevronUp className="h-4 w-4 text-primaryGreen" /> :
+              {isInventoryOpen ? (
+                <ChevronUp className="h-4 w-4 text-primaryGreen" />
+              ) : (
                 <ChevronDown className="h-4 w-4 text-primaryGreen" />
-              }
+              )}
             </button>
             {isInventoryOpen && (
               <ul className="bg-primaryGreen text-cleanWhite rounded-md mt-1">
@@ -83,7 +92,7 @@ export default function Navbar() {
                 </li>
                 <li>
                   <button
-                    onClick={() => navigate('/Inventory/groups')}
+                    onClick={() => navigate('/inventory/groups')}
                     className="block py-3 pl-10 hover:bg-darkGreen w-full text-left rounded-md"
                   >
                     Medicine Groups
@@ -96,7 +105,9 @@ export default function Navbar() {
           {/* Transaction */}
           <li>
             <button
-              className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-green-50 rounded-md"
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-md ${
+                isTransactionOpen ? 'bg-green-100 text-primaryGreen font-semibold' : 'text-gray-700 hover:bg-green-50'
+              }`}
               onClick={() => setIsTransactionOpen((prev) => !prev)}
               aria-expanded={isTransactionOpen}
             >
@@ -104,10 +115,11 @@ export default function Navbar() {
                 <BarChart2 className="h-5 w-5 mr-3 text-primaryGreen" />
                 <span>Transaction</span>
               </div>
-              {isTransactionOpen ?
-                <ChevronUp className="h-4 w-4 text-primaryGreen" /> :
+              {isTransactionOpen ? (
+                <ChevronUp className="h-4 w-4 text-primaryGreen" />
+              ) : (
                 <ChevronDown className="h-4 w-4 text-primaryGreen" />
-              }
+              )}
             </button>
             {isTransactionOpen && (
               <ul className="bg-primaryGreen text-cleanWhite rounded-md mt-1">
