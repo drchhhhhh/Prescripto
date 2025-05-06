@@ -22,7 +22,7 @@ router.post("/", createTransaction)
 router.get("/", getAllTransactions)
 
 // Route: GET /api/transactions/date
-router.get("/date", getTransactionsByDateRange)
+router.get("/date/:startDate/:endDate", getTransactionsByDateRange)
 
 // Route: GET /api/transactions/receipt/:receiptNumber
 router.get("/receipt/:receiptNumber", getTransactionByReceiptNumber)
