@@ -154,7 +154,7 @@ export default function InventoryGroups() {
           
           {/* Search Section */}
           <div className="mb-6">
-            <div className="flex items-center w-full max-w-md bg-cleanWhite border border-gray-200 rounded-lg px-4 py-2 shadow-sm">
+            <div className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-md px-4 py-2 shadow-sm">
               <Search className="h-5 w-5 text-gray-400 mr-2" />
               <input
                 type="text"
