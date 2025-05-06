@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, Search, Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Settings, Users } from "lucide-react";
+import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Settings, Users } from "lucide-react";
+import { FaMagnifyingGlass} from "react-icons/fa6"
 import Header from '../../components/Header';
 import AddGroupModal from '../../components/Inventory/InvAddGroupModal'; // adjust path as needed
 
@@ -138,7 +139,7 @@ export default function InventoryGroups() {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold text-darkGray">Inventory</h1>
-                <ChevronRight className="w-5 h-5 text-gray-400" />
+                <h1 className='text-darkGray text-xl font-bold'>{'>'}</h1>
                 <h1 className="text-2xl font-bold text-primaryGreen">Medicine Groups</h1>
               </div>
               <p className="text-gray-600 mt-1">Manage and organize your medicine inventory by groups.</p>
@@ -156,7 +157,6 @@ export default function InventoryGroups() {
           {/* Search Section */}
           <div className="mb-6">
             <div className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-md px-4 py-2 shadow-sm">
-              <Search className="h-5 w-5 text-gray-400 mr-2" />
               <input
                 type="text"
                 value={query}
@@ -164,6 +164,9 @@ export default function InventoryGroups() {
                 placeholder="Search medicine groups..."
                 className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
               />
+              <button type="submit" className="text-gray-500 hover:text-gray-700 transition" aria-label="Search">
+                <FaMagnifyingGlass />
+              </button>
             </div>
           </div>
           

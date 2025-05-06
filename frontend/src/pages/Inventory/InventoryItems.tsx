@@ -139,7 +139,7 @@ const InventoryItems = () => {
             >
               <input
                 type="text"
-                placeholder="Search Medicine Inventory.."
+                placeholder="Search medicine inventory.."
                 className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
