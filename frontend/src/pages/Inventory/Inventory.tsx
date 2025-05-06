@@ -5,7 +5,7 @@ import Header from "../../components/Header";
 
 const InventoryPage = () => {
   return (
-    <main className="bg-primaryBG w-full min-h-screen">
+    <main className="bg-primaryBG w-full min-h-screen pl-64">
         <Header />
         <section className='w-full flex flex-row justify-between items-center p-5'>
             <div className="flex flex-col">
