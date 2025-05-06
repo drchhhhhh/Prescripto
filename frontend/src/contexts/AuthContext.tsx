@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setToken(data.token);
                 setUser(data.user);
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('userID', data._id)
                 return true;
             } else {
                 throw new Error(data.message || 'Login failed');
@@ -60,6 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(null);
             setToken(null);
             localStorage.removeItem('token');
+            localStorage.removeItem('userID');
         } catch (error) {
             console.error("Error Logging Out: ", error instanceof Error ? error.message : 'Unknown error');
         }

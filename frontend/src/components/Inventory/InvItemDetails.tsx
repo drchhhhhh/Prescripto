@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { endpoints } from "../../config/config";
 import Header from "../Header";
-import { getUserData } from "../../contexts/AuthContext";
 
 interface MedicineItem {
     name: string;
@@ -18,11 +17,11 @@ interface MedicineItem {
 
 const InvItemDetails = () => {
     const params = useParams<{ medicineId: string }>();
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
+    const userID = localStorage.getItem("userID");
     const [itemData, setItemData] = useState<MedicineItem | null>(null);
     const navigate = useNavigate()
     const [isAdmin, setIsAdmin] = useState(false);
-    const userData = getUserData(token);
     
     useEffect(() => {
         const getItemDetails = async () => {
@@ -49,11 +48,25 @@ const InvItemDetails = () => {
         const checkIfAdmin = async () => {
             try {
 
-                // ADD LOGIC IF ADMIN THINGY SO BUTTON APPEARS
+                const response = await fetch(endpoints.getUserId + userID, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch medicines');
+                }
 
-                console.log(userData)
-          
-                setIsAdmin(true);
+                const data = await response.json()
+                if (data.role === "Admin") {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                }
+                
             } catch (error) {
                 console.error("Error fetching medicine details: ", error)
             }
@@ -75,7 +88,7 @@ const InvItemDetails = () => {
     }
 
     return (
-        <main className="bg-primaryBG w-full h-full">
+        <main className="bg-primaryBG w-full h-full pl-64 pb-5">
             <Header />
 
             <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 mt-5">
