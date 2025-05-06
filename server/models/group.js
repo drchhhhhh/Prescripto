@@ -16,6 +16,15 @@ const groupSchema = new mongoose.Schema({
     type: String,
     default: '💊' // Default emoji for pharmacy groups
   },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+    // Not required to maintain backward compatibility with existing data
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   createdAt: {
     type: Date,
     default: Date.now

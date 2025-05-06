@@ -1,4 +1,12 @@
 import Group from "../models/Group.js";
+import Medicine from "../models/Medicine.js";
+import mongoose from "mongoose";
+
+// Helper function to extract branch from username
+const extractBranchFromUsername = (username) => {
+  // Remove "_Admin" or "_User" suffix if present
+  return username.replace(/_Admin$|_User$/, "");
+};
 
 // Get all groups
 export const getAllGroups = async (req, res) => {
@@ -34,13 +42,19 @@ export const createGroup = async (req, res) => {
       return res.status(400).json({ message: "A group with this name already exists" });
     }
 
+    // Create new group with creator information
     const group = new Group({
       name,
       description: description || "",
       emoji: emoji || "💊",
+      createdBy: req.user._id, // Add reference to the user who created the group
     });
 
     await group.save();
+    
+    // Log the action
+    console.log(`Group "${name}" created by ${req.user.username} (${req.user._id})`);
+    
     res.status(201).json(group);
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -50,54 +64,86 @@ export const createGroup = async (req, res) => {
   }
 };
 
-// Update group
-export const updateGroup = async (req, res) => {
+// Delete group and all associated medicines
+export const deleteGroup = async (req, res) => {
+  // Start a MongoDB session for transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
-    const { name, description, emoji } = req.body;
-
-    const group = await Group.findById(req.params.id);
+    const group = await Group.findById(req.params.id).session(session);
     if (!group) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ message: "Group not found" });
     }
 
-    // If name is being changed, check if the new name already exists
-    if (name && name !== group.name) {
-      const existingGroup = await Group.findOne({ name });
-      if (existingGroup) {
-        return res.status(400).json({ message: "A group with this name already exists" });
-      }
-    }
+    // Find all medicines that belong to this group
+    const medicines = await Medicine.find({ 
+      $or: [
+        { group: group._id },
+        { category: group.name }
+      ]
+    }).session(session);
 
-    // Update group fields
-    if (name) group.name = name;
-    if (description !== undefined) group.description = description;
-    if (emoji) group.emoji = emoji;
+    // Get count of medicines to be deleted
+    const medicineCount = medicines.length;
     
-    group.updatedAt = Date.now();
+    // Store group name for logging
+    const groupName = group.name;
 
-    await group.save();
-    res.status(200).json(group);
+    // Delete all medicines that belong to this group
+    await Medicine.deleteMany({ 
+      $or: [
+        { group: group._id },
+        { category: group.name }
+      ]
+    }).session(session);
+
+    // Delete the group
+    await group.deleteOne({ session });
+
+    // Commit the transaction
+    await session.commitTransaction();
+    session.endSession();
+    
+    // Log the action
+    console.log(`Group "${groupName}" and ${medicineCount} associated medicines deleted by ${req.user.username} (${req.user._id})`);
+
+    res.status(200).json({ 
+      message: `Group deleted successfully along with ${medicineCount} associated medicines` 
+    });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ message: "Validation error", details: error.message });
-    }
+    // Abort transaction in case of error
+    await session.abortTransaction();
+    session.endSession();
+    
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Delete group
-export const deleteGroup = async (req, res) => {
+// Get medicines count by group
+export const getMedicinesCountByGroup = async (req, res) => {
   try {
-    const group = await Group.findById(req.params.id);
+    const groupId = req.params.id;
+    
+    const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-
-    // Note: You might want to check if any medicines are using this group
-    // before deleting it, and either prevent deletion or update those medicines
-
-    await group.deleteOne();
-    res.status(200).json({ message: "Group deleted successfully" });
+    
+    // Count medicines that belong to this group
+    const medicineCount = await Medicine.countDocuments({ 
+      $or: [
+        { group: groupId },
+        { category: group.name }
+      ]
+    });
+    
+    res.status(200).json({ 
+      group: group.name,
+      medicineCount
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
