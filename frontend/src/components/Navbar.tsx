@@ -1,8 +1,8 @@
 "use client"
 
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../assets/logo.svg';
 import {
   ChevronDown,
   ChevronUp,
@@ -17,37 +17,17 @@ import {
 export default function Navbar() {
   const navigate = useNavigate();
 
-
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-
   return (
-    <aside className="h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
+    <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins z-50">
       {/* Logo */}
       <header className="p-4 flex items-center border-b border-gray-100">
-        <figure className="bg-primaryGreen p-1 rounded">
-          <svg className="w-6 h-6 text-cleanWhite" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M19.5 5.5L18 2H9.5L8 5.5M19.5 5.5H8M19.5 5.5L21 16M8 5.5L6.5 16M21 16H6.5M21 16L22 22H5L6.5 16"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M13 10L15 12L20 7"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </figure>
-        <span className="ml-2 text-xl font-medium text-primaryGreen">Prescripto</span>
+        <img src={Logo} alt="Prescripto Logo" className="h-8 w-auto"/>
+        <span className="ml-2 text-xl font-semibold text-primaryGreen">Prescripto</span>
       </header>
-
 
       {/* Profile Section */}
       <section className="p-4 flex items-center justify-between border-b border-gray-100 relative">
@@ -56,7 +36,7 @@ export default function Navbar() {
             <span className="text-sm font-medium">A</span>
           </div>
           <figcaption className="ml-3">
-            <h3 className="font-medium text-darkGray">Arshie</h3>
+            <h3 className="font-semibold text-darkGray">Arshie</h3>
             <p className="text-xs text-primaryGreen">Pharmacist</p>
           </figcaption>
         </figure>
@@ -93,7 +73,6 @@ export default function Navbar() {
         </div>
       </section>
 
-
       {/* Navigation */}
       <nav className="p-2 flex-1 overflow-y-auto">
         <ul>
@@ -106,7 +85,6 @@ export default function Navbar() {
               <span>Dashboard</span>
             </button>
           </li>
-
 
           {/* Inventory */}
           <li className="mb-1">
@@ -145,7 +123,6 @@ export default function Navbar() {
               </ul>
             )}
           </li>
-
 
           {/* Transaction */}
           <li>
@@ -187,7 +164,6 @@ export default function Navbar() {
         </ul>
       </nav>
 
-
       {/* Logout */}
       <footer className="p-4 border-t border-gray-100">
         <button
@@ -201,4 +177,3 @@ export default function Navbar() {
     </aside>
   );
 }
-

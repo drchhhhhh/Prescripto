@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Plus, Minus, Trash2 } from "lucide-react"
 import Header from "../../components/Header"
 import TransactionModal from "../../components/TransactionModal"
@@ -64,20 +65,23 @@ const TransactionForm = () => {
   return (
     <>
       <Header />
-      <main className="bg-white rounded-lg shadow-sm relative font-poppins flex flex-col h-[calc(100vh-80px)]">
+      <main className="bg-primaryBG s hadow-sm relative font-poppins pl-64 flex flex-col h-[calc(100vh-80px)] p-0">
         {" "}
-        <section className="p-6 flex flex-col h-full">
+        <section className="p-5 flex flex-col h-full">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-semibold text-darkGray">
-                Transaction <span className="text-gray-400">&gt;</span>{" "}
-                <span className="text-primaryGreen">Log Transaction</span>
-              </h1>
-              <p className="text-gray-700 mt-1">*All fields are mandatory, except mentioned as (optional).</p>
+            <div className="flex flex-col">
+              <div className="flex flex-row gap-2 items-center">
+                <Link className="text-darkGray text-2xl font-bold" to="/transactions">
+                  Transaction
+                </Link>
+                  <h1 className="text-darkGray text-xl font-bold">{">"}</h1>
+                  <h1 className="text-darkGreen text-2xl font-bold">Transaction Log</h1>
+              </div>
+              <h3 className="text-gray-600">All fields are mandatory, except mentioned as (optional).*</h3>
             </div>
             <button
               onClick={addNewItem}
-              className="flex items-center px-4 py-2 bg-cleanWhite border border-primaryGreen rounded-full text-primaryGreen hover:bg-lightGreen"
+              className="flex items-center px-4 py-2 bg-primaryGreen hover:bg-darkGreen ease-in duration-100 text-cleanWhite rounded-md"
             >
               <Plus className="w-5 h-5 mr-1" />
               Add Field
@@ -174,11 +178,11 @@ const TransactionForm = () => {
             <aside className="w-1/3 pl-6 flex flex-col justify-center space-y-3">
               <button
                 onClick={submitTransaction}
-                className="px-8 py-3 bg-primaryGreen hover:bg-darkGreen rounded-full text-cleanWhite"
+                className="px-8 py-3 bg-primaryGreen hover:bg-darkGreen rounded-md text-cleanWhite"
               >
                 Save Transaction
               </button>
-              <button className="px-8 py-3 bg-gray-300 hover:bg-gray-400 rounded-full text-gray-700">Cancel</button>
+              <button className="px-8 py-3 bg-gray-300 hover:bg-gray-400 rounded-md text-gray-700">Cancel</button>
             </aside>
           </div>
 
