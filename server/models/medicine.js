@@ -11,6 +11,11 @@ const medicineSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  group: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Group',
+    // Not required to maintain backward compatibility with existing data
+  },
   description: {
     type: String,
     trim: true,

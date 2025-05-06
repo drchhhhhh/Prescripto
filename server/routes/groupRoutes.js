@@ -6,23 +6,23 @@ import {
   updateGroup, 
   deleteGroup 
 } from '../controllers/groupController.js';
-import { authenticateUser } from '../middleware/auth.js'; // Assuming you have auth middleware
+import { protect } from "../middleware/auth.js"
 
 const router = express.Router();
 
 // Get all groups
-router.get('/', authenticateUser, getAllGroups);
+router.get('/', protect, getAllGroups);
 
 // Get group by ID
-router.get('/:id', authenticateUser, getGroupById);
+router.get('/:id', protect, getGroupById);
 
 // Create new group
-router.post('/', authenticateUser, createGroup);
+router.post('/', protect, createGroup);
 
 // Update group
-router.put('/:id', authenticateUser, updateGroup);
+router.put('/:id', protect, updateGroup);
 
 // Delete group
-router.delete('/:id', authenticateUser, deleteGroup);
+router.delete('/:id', protect, deleteGroup);
 
 export default router;

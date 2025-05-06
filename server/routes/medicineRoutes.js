@@ -5,7 +5,8 @@ import {
   createMedicine, 
   updateMedicine, 
   deleteMedicine,
-  getMedicinesByExpirationStatus
+  getMedicinesByExpirationStatus,
+  getMedicinesByGroup
 } from '../controllers/medicineController.js';
 import { protect, adminOnly } from '../middleware/auth.js';
 
@@ -22,6 +23,9 @@ router.get('/expiration', getMedicinesByExpirationStatus);
 
 // Route: GET /api/medicines/:id
 router.get('/:id', getMedicineById);
+
+// Route: GET /api/medicines/group/:groupId
+router.get('/group/:groupId', getMedicinesByGroup);
 
 // Route: POST /api/medicines - Admin and Staff can create
 router.post('/', createMedicine);
