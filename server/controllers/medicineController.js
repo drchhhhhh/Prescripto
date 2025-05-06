@@ -1,182 +1,201 @@
-import Medicine from '../models/Medicine.js';
-import Transaction from '../models/Transaction.js';
-import mongoose from 'mongoose';
+import Medicine from "../models/Medicine.js"
+import Transaction from "../models/Transaction.js"
+import mongoose from "mongoose"
+
+// Helper function to extract branch name from username
+const extractBranchFromUsername = (username) => {
+  // Remove "_Admin" or "_User" suffix if present
+  return username.replace(/_Admin$|_User$/, "")
+}
 
 // Get all medicines
 export const getAllMedicines = async (req, res) => {
   try {
-    const medicines = await Medicine.find();
-    res.status(200).json(medicines);
+    const medicines = await Medicine.find()
+    res.status(200).json(medicines)
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
 
 // Get medicine by ID
 export const getMedicineById = async (req, res) => {
   try {
-    const medicine = await Medicine.findById(req.params.id);
+    const medicine = await Medicine.findById(req.params.id)
     if (!medicine) {
-      return res.status(404).json({ message: 'Medicine not found' });
+      return res.status(404).json({ message: "Medicine not found" })
     }
-    res.status(200).json(medicine);
+    res.status(200).json(medicine)
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
 
 // Create new medicine
 export const createMedicine = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const session = await mongoose.startSession()
+  session.startTransaction()
 
   try {
-    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body;
+    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body
+
+    // Extract branch from username
+    const branch = extractBranchFromUsername(req.user.username)
 
     // Create the medicine
     const medicine = new Medicine({
       name,
       category,
-      description: description || '',
-      sideEffects: sideEffects || 'No known side effects documented.',
+      description: description || "",
+      sideEffects: sideEffects || "No known side effects documented.",
       price,
       quantity,
-      expirationDate
-    });
+      expirationDate,
+      branch, // Add branch from username
+    })
 
-    await medicine.save({ session });
+    await medicine.save({ session })
 
     // Generate receipt number for the restock transaction
-    const receiptNumber = await Transaction.generateReceiptNumber('restock');
+    const receiptNumber = await Transaction.generateReceiptNumber("restock")
 
     // Create a restock transaction
     const transaction = new Transaction({
       receiptNumber,
-      transactionType: 'restock',
-      items: [{
-        medicine: medicine._id,
-        quantity,
-        price
-      }],
+      transactionType: "restock",
+      items: [
+        {
+          medicine: medicine._id,
+          quantity,
+          price,
+        },
+      ],
       totalAmount: price * quantity,
       createdBy: req.user._id,
-      notes: notes || `Initial stock of ${name}`
-    });
+      notes: notes || `Initial stock of ${name}`,
+    })
 
-    await transaction.save({ session });
+    await transaction.save({ session })
 
-    await session.commitTransaction();
-    session.endSession();
+    await session.commitTransaction()
+    session.endSession()
 
-    res.status(201).json(medicine);
+    res.status(201).json(medicine)
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    res.status(500).json({ message: 'Server error', error: error.message });
+    await session.abortTransaction()
+    session.endSession()
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
 
 // Update medicine
 export const updateMedicine = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const session = await mongoose.startSession()
+  session.startTransaction()
 
   try {
-    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body;
-    
-    const medicine = await Medicine.findById(req.params.id).session(session);
+    const { name, category, description, sideEffects, price, quantity, expirationDate, notes } = req.body
+
+    const medicine = await Medicine.findById(req.params.id).session(session)
     if (!medicine) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ message: 'Medicine not found' });
+      await session.abortTransaction()
+      session.endSession()
+      return res.status(404).json({ message: "Medicine not found" })
     }
 
     // Check if quantity is being increased (restocking)
-    const isRestocking = quantity !== undefined && quantity > medicine.quantity;
-    const oldQuantity = medicine.quantity;
+    const isRestocking = quantity !== undefined && quantity > medicine.quantity
+    const oldQuantity = medicine.quantity
 
     // Update medicine fields
-    if (name) medicine.name = name;
-    if (category) medicine.category = category;
-    if (description !== undefined) medicine.description = description;
-    if (sideEffects !== undefined) medicine.sideEffects = sideEffects;
-    if (price !== undefined) medicine.price = price;
-    if (quantity !== undefined) medicine.quantity = quantity;
-    if (expirationDate) medicine.expirationDate = expirationDate;
-    
-    medicine.updatedAt = Date.now();
+    if (name) medicine.name = name
+    if (category) medicine.category = category
+    if (description !== undefined) medicine.description = description
+    if (sideEffects !== undefined) medicine.sideEffects = sideEffects
+    if (price !== undefined) medicine.price = price
+    if (quantity !== undefined) medicine.quantity = quantity
+    if (expirationDate) medicine.expirationDate = expirationDate
 
-    await medicine.save({ session });
+    // Update branch if not already set (for existing records)
+    if (!medicine.branch) {
+      medicine.branch = extractBranchFromUsername(req.user.username)
+    }
+
+    medicine.updatedAt = Date.now()
+
+    await medicine.save({ session })
 
     // If restocking, create a transaction
     if (isRestocking) {
-      const restockQuantity = quantity - oldQuantity;
-      const currentPrice = price !== undefined ? price : medicine.price;
+      const restockQuantity = quantity - oldQuantity
+      const currentPrice = price !== undefined ? price : medicine.price
 
       // Generate receipt number for the restock transaction
-      const receiptNumber = await Transaction.generateReceiptNumber('restock');
+      const receiptNumber = await Transaction.generateReceiptNumber("restock")
 
       const transaction = new Transaction({
         receiptNumber,
-        transactionType: 'restock',
-        items: [{
-          medicine: medicine._id,
-          quantity: restockQuantity,
-          price: currentPrice
-        }],
+        transactionType: "restock",
+        items: [
+          {
+            medicine: medicine._id,
+            quantity: restockQuantity,
+            price: currentPrice,
+          },
+        ],
         totalAmount: currentPrice * restockQuantity,
         createdBy: req.user._id,
-        notes: notes || `Restocked ${medicine.name}`
-      });
+        notes: notes || `Restocked ${medicine.name}`,
+      })
 
-      await transaction.save({ session });
+      await transaction.save({ session })
     }
 
-    await session.commitTransaction();
-    session.endSession();
+    await session.commitTransaction()
+    session.endSession()
 
-    res.status(200).json(medicine);
+    res.status(200).json(medicine)
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    res.status(500).json({ message: 'Server error', error: error.message });
+    await session.abortTransaction()
+    session.endSession()
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
 
 // Delete medicine
 export const deleteMedicine = async (req, res) => {
   try {
-    const medicine = await Medicine.findById(req.params.id);
+    const medicine = await Medicine.findById(req.params.id)
     if (!medicine) {
-      return res.status(404).json({ message: 'Medicine not found' });
+      return res.status(404).json({ message: "Medicine not found" })
     }
 
-    await medicine.deleteOne();
-    res.status(200).json({ message: 'Medicine deleted successfully' });
+    await medicine.deleteOne()
+    res.status(200).json({ message: "Medicine deleted successfully" })
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
 
 // Get medicines by expiration status
 export const getMedicinesByExpirationStatus = async (req, res) => {
   try {
-    const today = new Date();
-    const thirtyDaysFromNow = new Date(today);
-    thirtyDaysFromNow.setDate(today.getDate() + 30);
+    const today = new Date()
+    const thirtyDaysFromNow = new Date(today)
+    thirtyDaysFromNow.setDate(today.getDate() + 30)
 
-    const expired = await Medicine.find({ expirationDate: { $lt: today } });
+    const expired = await Medicine.find({ expirationDate: { $lt: today } })
     const expiringSoon = await Medicine.find({
-      expirationDate: { $gte: today, $lte: thirtyDaysFromNow }
-    });
-    const valid = await Medicine.find({ expirationDate: { $gt: thirtyDaysFromNow } });
+      expirationDate: { $gte: today, $lte: thirtyDaysFromNow },
+    })
+    const valid = await Medicine.find({ expirationDate: { $gt: thirtyDaysFromNow } })
 
     res.status(200).json({
       expired,
       expiringSoon,
-      valid
-    });
+      valid,
+    })
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message })
   }
-};
+}
