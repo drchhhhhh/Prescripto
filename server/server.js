@@ -10,6 +10,7 @@ import userRoutes from './routes/userRoutes.js';
 import medicineRoutes from './routes/medicineRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -28,6 +29,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/groups', groupRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

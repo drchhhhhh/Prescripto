@@ -58,7 +58,11 @@ export const getTransactionByReceiptNumber = async (req, res) => {
 // Get transactions by date range
 export const getTransactionsByDateRange = async (req, res) => {
   try {
-    const { startDate, endDate } = req.query
+    // Change this:
+    // const { startDate, endDate } = req.query
+    
+    // To this:
+    const { startDate, endDate } = req.params
 
     if (!startDate || !endDate) {
       return res.status(400).json({ message: "Start date and end date are required" })
