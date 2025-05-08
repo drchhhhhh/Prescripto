@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaMagnifyingGlass, FaSort, FaSortUp, FaSortDown } from "react-icons/fa6";
+import { Store, ChevronDown } from "lucide-react"; // Added import for the missing icons
 import Header from '../../components/Header';
 import { endpoints } from '../../config/config';
 
@@ -22,6 +23,13 @@ const InventoryItems = () => {
     field: SortableField;
     direction: SortDirection;
   }>({ field: 'name', direction: 'none' });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [branchFilter, setBranchFilter] = useState('');
+
+  const handleFilterSelect = (branch: string) => {
+    setBranchFilter(branch);
+    setIsFilterOpen(false);
+  };
   const token = localStorage.getItem("token")
 
   useEffect(() => {
@@ -116,7 +124,7 @@ const InventoryItems = () => {
       default:
         return <FaSort className="ml-1 opacity-50" />;
     }
-  };
+  };  
 
   return (
       <main className="flex flex-col bg-primaryBG w-full min-h-screen font-poppins pl-64">
@@ -141,15 +149,15 @@ const InventoryItems = () => {
             </Link>
           </section>
 
-          {/* Search and Filter Section */}
-          <section className='flex flex-row justify-between items-center mt-2'>
+          {/* Search and Filter Section - Updated to place them inline */}
+          <section className='flex flex-row justify-between items-center mt-2 gap-4'>
             <form
-              className="flex items-center w-full max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
+              className="flex items-center flex-grow max-w-md bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
               onSubmit={(e) => e.preventDefault()}
             >
               <input
                 type="text"
-                placeholder="Search Medicine Inventory.."
+                placeholder="Search medicine inventory.."
                 className="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -158,8 +166,147 @@ const InventoryItems = () => {
                 <FaMagnifyingGlass />
               </button>
             </form>
+
+            {/* Branch Filter - Moved inline with search bar */}
+            <div className="relative">
+              <button
+                className="flex items-center justify-between bg-primaryBG border border-primaryGreen rounded-md px-4 py-2 min-w-[200px] text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              >
+                <span>
+                  {branchFilter === "balagtas"
+                    ? "Balagtas Branch"
+                    : branchFilter === "alangilan"
+                    ? "Alangilan Branch"
+                    : branchFilter === "bayan"
+                    ? "Bayan Branch"
+                    : "Branch Filter"}
+                </span>
+                <ChevronDown className="ml-2" />
+              </button>
+
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                  <ul>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("balagtas")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Balagtas Branch
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("alangilan")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Alangilan Branch
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("bayan")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Bayan Branch
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </section>
 
+          {/* Item Display Section */}
+          <section className='flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 mt-5 flex-1 max-h-[400px]'>
+            <div className="overflow-auto h-full">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th 
+                      scope="col" 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort('name')}
+                    >
+                      <div className="flex items-center">
+                        Medicine Name
+                        {getSortIcon('name')}
+                      </div>
+                    </th>
+                    <th 
+                      scope="col" 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort('id')}
+                    >
+                      <div className="flex items-center">
+                        Medicine ID
+                        {getSortIcon('id')}
+                      </div>
+                    </th>
+                    <th 
+                      scope="col" 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort('group')}
+                    >
+                      <div className="flex items-center">
+                        Group Name
+                        {getSortIcon('group')}
+                      </div>
+                    </th>
+                    <th 
+                      scope="col" 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort('stock')}
+                    >
+                      <div className="flex items-center">
+                        Stock in Qty
+                        {getSortIcon('stock')}
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredMedicines.length > 0 ? (
+                    filteredMedicines.map((medicine, index) => (
+                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {medicine.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {medicine.id}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {medicine.group}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {medicine.stock}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <Link 
+                            to={`/inventory/item-list/${medicine.id}`}
+                            className="text-primaryGreen hover:text-darkGreen hover:underline"
+                          >
+                            View Full Detail
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                        No medicines found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+        
+      </main>
+    </>
         {/* Item Display Section - Updated for proper sizing */}
         <section className='flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 mt-5 flex-1 max-h-[400px]'>
           <div className="overflow-auto h-full">

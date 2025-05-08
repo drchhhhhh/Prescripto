@@ -26,7 +26,10 @@ const TransactionForm = () => {
   }
 
   const removeItem = (id: string) => {
-    setMedicineItems(medicineItems.filter((item) => item.id !== id))
+    // Only remove the item if there would still be at least one item left
+    if (medicineItems.length > 1) {
+      setMedicineItems(medicineItems.filter((item) => item.id !== id))
+    }
   }
 
   const updateItemField = (id: string, field: keyof MedicineItem, value: string | number) => {
@@ -58,6 +61,7 @@ const TransactionForm = () => {
   const dismissModal = () => {
     setShowModal(false)
     if (isTransactionValid) {
+      // Reset to a single default item after successful transaction
       setMedicineItems([{ id: "1", name: "", price: 0, quantity: 1 }])
     }
   }
@@ -102,7 +106,7 @@ const TransactionForm = () => {
             </div>
 
             <ul className="space-y-4">
-              {medicineItems.map((item) => (
+              {medicineItems.map((item, index) => (
                 <li key={item.id} className="grid grid-cols-12 gap-4">
                   <div className="col-span-6">
                     <input
@@ -140,12 +144,15 @@ const TransactionForm = () => {
                     >
                       <Plus className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="ml-2 p-1 rounded-full bg-red-50 text-red-500"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    {/* Show delete button only if there's more than one item */}
+                    {medicineItems.length > 1 && (
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="ml-2 p-1 rounded-full bg-red-50 text-red-500"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}

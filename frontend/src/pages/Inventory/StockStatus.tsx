@@ -1,11 +1,14 @@
 "use client"
 
+
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { FaMagnifyingGlass, FaChevronDown } from "react-icons/fa6"
+import { FaMagnifyingGlass, FaChevronDown} from "react-icons/fa6"
 import Header from "../../components/Header"
+import StockModal from "../../components/Inventory/StockModal"
 
-type Medicine = {
+
+export interface Medicine  {
   id: string
   name: string
   currentStock: number
@@ -16,8 +19,10 @@ type Medicine = {
   lastUpdated: string
 }
 
+
 type SortDirection = "asc" | "desc" | "none"
 type SortableField = "id" | "name" | "currentStock" | "status" | "supplier" | "lastUpdated"
+
 
 const StockStatus = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([])
@@ -33,59 +38,60 @@ const StockStatus = () => {
   const [newStockAmount, setNewStockAmount] = useState<string>("")
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
+
   useEffect(() => {
     const fetchMedicines = async () => {
       await new Promise((resolve) => setTimeout(resolve, 500))
       const mockData: Medicine[] = [
-        { 
-          id: "MED001", 
-          name: "Augmentin 625 Duo", 
-          currentStock: 5, 
-          minimumStock: 10, 
+        {
+          id: "MED001",
+          name: "Augmentin 625 Duo",
+          currentStock: 5,
+          minimumStock: 10,
           maximumStock: 100,
-          status: "low", 
+          status: "low",
           supplier: "ABC Pharmaceuticals",
-          lastUpdated: "2025-04-20" 
+          lastUpdated: "2025-04-20"
         },
-        { 
-          id: "MED002", 
-          name: "Azithral 500 Tablet", 
-          currentStock: 8, 
-          minimumStock: 10, 
+        {
+          id: "MED002",
+          name: "Azithral 500 Tablet",
+          currentStock: 8,
+          minimumStock: 10,
           maximumStock: 100,
-          status: "low", 
+          status: "low",
           supplier: "MediCorp Ltd.",
-          lastUpdated: "2025-04-21" 
+          lastUpdated: "2025-04-21"
         },
-        { 
-          id: "MED003", 
-          name: "Ascoril LS Syrup", 
-          currentStock: 15, 
-          minimumStock: 10, 
+        {
+          id: "MED003",
+          name: "Ascoril LS Syrup",
+          currentStock: 15,
+          minimumStock: 10,
           maximumStock: 50,
-          status: "moderate", 
+          status: "moderate",
           supplier: "PharmaCare Inc.",
-          lastUpdated: "2025-04-22" 
+          lastUpdated: "2025-04-22"
         },
-        { 
-          id: "MED004", 
-          name: "Azee 500 Tablet", 
-          currentStock: 25, 
-          minimumStock: 10, 
+        {
+          id: "MED004",
+          name: "Azee 500 Tablet",
+          currentStock: 25,
+          minimumStock: 10,
           maximumStock: 60,
-          status: "moderate", 
+          status: "moderate",
           supplier: "MediCorp Ltd.",
-          lastUpdated: "2025-04-19" 
+          lastUpdated: "2025-04-19"
         },
-        { 
-          id: "MED005", 
-          name: "Allegra 120mg Tablet", 
-          currentStock: 3, 
-          minimumStock: 15, 
+        {
+          id: "MED005",
+          name: "Allegra 120mg Tablet",
+          currentStock: 3,
+          minimumStock: 15,
           maximumStock: 100,
-          status: "low", 
+          status: "low",
           supplier: "HealthFirst Suppliers",
-          lastUpdated: "2025-04-18" 
+          lastUpdated: "2025-04-18"
         },
       ]
       setMedicines(mockData)
@@ -93,6 +99,7 @@ const StockStatus = () => {
     }
     fetchMedicines()
   }, [])
+
 
   useEffect(() => {
     let filtered = medicines.filter(
@@ -103,40 +110,45 @@ const StockStatus = () => {
         medicine.status.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
+
     // Apply status filter
     if (filterOption !== "all") {
       filtered = filtered.filter(medicine => medicine.status === filterOption)
     }
 
+
     setFilteredMedicines(filtered)
   }, [searchTerm, medicines, filterOption])
+
 
   useEffect(() => {
     if (sortConfig.direction === "none") {
       return
     }
-    
+   
     const sortedMedicines = [...filteredMedicines].sort((a, b) => {
       let aValue: any = a[sortConfig.field]
       let bValue: any = b[sortConfig.field]
-      
+     
       if (sortConfig.field === "lastUpdated") {
         aValue = new Date(aValue)
         bValue = new Date(bValue)
       }
-      
+     
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1
       if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1
       return 0
     })
-    
+   
     setFilteredMedicines(sortedMedicines)
   }, [sortConfig])
+
 
   const handleFilterSelect = (option: string) => {
     setFilterOption(option)
     setIsFilterOpen(false)
   }
+
 
   const updateStock = (medicine: Medicine) => {
     setEditingMedicine(medicine)
@@ -144,22 +156,23 @@ const StockStatus = () => {
     setIsModalOpen(true)
   }
 
+
   const handleStockUpdate = () => {
     if (!editingMedicine) return
-    
+   
     const stockAmount = parseInt(newStockAmount)
     if (isNaN(stockAmount) || stockAmount < 0) return
-    
+   
     const updatedMedicines = medicines.map(med => {
       if (med.id === editingMedicine.id) {
         let status: "low" | "moderate" | "high" = "low"
-        
+       
         if (stockAmount >= med.minimumStock && stockAmount < med.maximumStock * 0.8) {
           status = "moderate"
         } else if (stockAmount >= med.maximumStock * 0.8) {
           status = "high"
         }
-        
+       
         return {
           ...med,
           currentStock: stockAmount,
@@ -169,11 +182,12 @@ const StockStatus = () => {
       }
       return med
     })
-    
+   
     setMedicines(updatedMedicines)
     setIsModalOpen(false)
     setEditingMedicine(null)
   }
+
 
   const getStatusClass = (status: string) => {
     switch(status) {
@@ -187,6 +201,7 @@ const StockStatus = () => {
         return "bg-gray-100 text-gray-800 rounded-md p-2"
     }
   }
+
 
   return (
     <>
@@ -207,6 +222,7 @@ const StockStatus = () => {
             </div>    
           </section>
 
+
           {/* Search and Filter */}
           <section className="flex flex-row justify-between items-center mt-2">
             <form
@@ -225,12 +241,13 @@ const StockStatus = () => {
               </button>
             </form>
 
+
             <div className="relative">
               <button
-                className="flex items-center justify-between bg-white border border-gray-300 rounded-md px-4 py-2 min-w-[200px]"
+                className="flex items-center justify-between bg-primaryBG border border-primaryGreen rounded-md px-4 py-2 min-w-[200px] text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
               >
-                <span className="text-gray-700">
+                <span className="text-primaryGreen-700">
                   {filterOption === "all"
                     ? "All Stock Levels"
                     : filterOption === "low"
@@ -239,8 +256,9 @@ const StockStatus = () => {
                         ? "Moderate Stock"
                         : "High Stock"}
                 </span>
-                <FaChevronDown className="ml-2 text-gray-500" />
+                <FaChevronDown className="ml-2 text-primaryGreen-500" />
               </button>
+
 
               {isFilterOpen && (
                 <div className="absolute right-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
@@ -274,6 +292,7 @@ const StockStatus = () => {
               )}
             </div>
           </section>
+
 
           {/* Medicines Table */}
           <section className="flex flex-col shadow bg-cleanWhite rounded-sm border-2 border-gray-400 mt-5 flex-1 max-h-[400px]">
@@ -344,49 +363,22 @@ const StockStatus = () => {
         </div>
       </main>
 
-      {/* Update Stock Modal */}
-      {isModalOpen && editingMedicine && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Update Stock for {editingMedicine.name}</h2>
-            
-            <div className="mb-4">
-              <p className="mb-2 text-sm text-gray-600">Current Stock: {editingMedicine.currentStock}</p>
-              <p className="mb-2 text-sm text-gray-600">Minimum Stock: {editingMedicine.minimumStock}</p>
-              <p className="mb-4 text-sm text-gray-600">Maximum Stock: {editingMedicine.maximumStock}</p>
-              
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="stock">
-                New Stock Amount:
-              </label>
-              <input
-                id="stock"
-                type="number"
-                min="0"
-                value={newStockAmount}
-                onChange={(e) => setNewStockAmount(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStockUpdate}
-                className="bg-primaryGreen hover:bg-darkGreen text-white font-bold py-2 px-4 rounded"
-              >
-                Update
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      <StockModal
+        medicine={editingMedicine}
+        newStockAmount={newStockAmount}
+        setNewStockAmount={setNewStockAmount}
+        onClose={() => {
+          setIsModalOpen(false)
+          setEditingMedicine(null)
+        }}
+        onSubmit={handleStockUpdate}
+        isOpen={isModalOpen}
+      />
     </>
   )
 }
 
+
 export default StockStatus
+
