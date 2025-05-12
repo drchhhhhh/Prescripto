@@ -17,6 +17,7 @@ import InventoryGroups from './pages/Inventory/InventoryGroups.tsx';
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import InvItemDetails from './components/Inventory/InvItemDetails.tsx';
 import ProtectedRoute from './utils/ProtectedRoute.tsx';
+import InventoryEditMedicine from './components/Inventory/InventoryEditMedicine.tsx';
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
               {
                 path: 'inventory/item-list/add',
                 element: <InventoryAddMedicine />,
+              },
+              {
+                path: 'inventory/item-list/edit/:medicineId',
+                element: <InventoryEditMedicine />,
               },
               {
                 path: 'inventory/groups',

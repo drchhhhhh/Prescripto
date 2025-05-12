@@ -1,9 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { endpoints } from '../../config/config';
 import Header from '../../components/Header';
 
 const InventoryEditMedicine = () => {
+    const params = useParams<{ medicineId: string }>();
     const [form, setForm] = useState({
         name: "",
         category: "",
@@ -15,7 +16,57 @@ const InventoryEditMedicine = () => {
     })
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
-    const params = useParams<{ }>();
+    const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const res = await fetch(endpoints.getAllGroups, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                setGroups(data);
+            } catch (err) {
+                console.error('Failed to fetch groups', err);
+            }
+        };
+
+        fetchGroups();
+    }, []);
+
+    useEffect(() => {
+        const fetchMedicine = async () => {
+            try {
+                const res = await fetch(`${endpoints.getMedId}/${params.medicineId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (!res.ok) throw new Error("Failed to fetch medicine");
+
+                const data = await res.json();
+
+                setForm({
+                    name: data.name || "",
+                    category: data.category || "",
+                    price: data.price?.toString() || "",
+                    quantity: data.quantity?.toString() || "",
+                    expirationDate: data.expirationDate?.split('T')[0] || "",
+                    description: data.description || "",
+                    sideEffects: data.sideEffects || "",
+                });
+
+            } catch (err) {
+                console.error("Error fetching medicine:", err);
+            }
+        };
+
+        if (params.medicineId) {
+            fetchMedicine();
+        }
+    }, [token, params.medicineId]);
 
     const handleChange = ( e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> ) => {
         setForm({
@@ -27,40 +78,35 @@ const InventoryEditMedicine = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const selectedGroup = groups.find(group => group.name === form.category);
             const formData = {
                 ...form,
-                category: form.category || "none"
-            }
+                category: form.category || "None",
+                group: selectedGroup ? selectedGroup.id : null
+            };
 
-            const response = await fetch(endpoints.createMed, {
-                method: "POST",
+            const response = await fetch(endpoints.updateMed + params.medicineId, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(formData)
-            })
+            });
 
-            if (!response) {
-                throw new Error(`Error: ${response}`);
-            }
-            
-            if (response.ok) {
-                // CREATE A POPUP SAYING SUCCESSFULLY ADDED ITEM
-                navigate("/inventory")
-            }
-            
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
 
-            const data = await response.json()
-            console.log(data)
-            return data
+            const data = await response.json();
+            navigate("/inventory");
+            return data;
+
         } catch (error) {
-            console.error("Failed to add item:", error)
+            console.error("Failed to edit item:", error);
         }
-    }
+    };
 
     return (
-        <main className="bg-primaryBG w-full h-full">
+        <main className="bg-primaryBG w-full h-full pl-64">
             <Header />
 
             <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 mt-5">
@@ -73,9 +119,9 @@ const InventoryEditMedicine = () => {
                             <h1 className='text-darkGray text-xl font-bold'>{'>'}</h1>
                             <Link className='text-darkGray text-2xl font-bold' to="/inventory/item-list">List of Medicines</Link>
                             <h1 className='text-darkGray text-xl font-bold'>{'>'}</h1>
-                            <h1 className='text-darkGreen text-2xl font-bold'>Add New Medicine</h1>
+                            <h1 className='text-darkGreen text-2xl font-bold'>Edit Medicine</h1>
                         </div>
-                        <h3>*All fields are mandatory, except mentioned as {'(optional)'}.</h3>
+                        <h3>*All fields are mandatory and need to be filled.</h3>
                     </div>
                 </section>
                 
@@ -89,6 +135,7 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="text"
                                 name="name"
+                                value={form.name}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                             />
@@ -102,6 +149,7 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="number"
                                 name="price"
+                                value={form.price}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                             />
@@ -111,7 +159,7 @@ const InventoryEditMedicine = () => {
                         {/* Medicine Group (Dropdown) */}
                         <div className="flex flex-col flex-1 min-w-[200px]">
                             <label className="text-sm font-medium text-gray-700 mb-1">
-                                Medicine Group {"(Optional)"}
+                                Medicine Group*
                             </label>
                             <select
                                 name="category"
@@ -119,7 +167,11 @@ const InventoryEditMedicine = () => {
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                             >
                                 <option value="">- Select Group -</option>
-                                {/* Create a map that would put all the created groups here */}
+                                {groups.map((group) => (
+                                    <option key={group.id} value={group.name}>
+                                        {group.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
@@ -131,6 +183,7 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="number"
                                 name="quantity"
+                                value={form.quantity}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                             />
@@ -146,6 +199,7 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="date"
                                 name="expirationDate"
+                                value={form.expirationDate}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                                 required
@@ -164,6 +218,7 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="text"
                                 name="description"
+                                value={form.description}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen h-38"
                             />
@@ -177,16 +232,17 @@ const InventoryEditMedicine = () => {
                             <input
                                 type="text"
                                 name="sideEffects"
+                                value={form.sideEffects}
                                 onChange={handleChange}
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen h-38"
                             />
                         </div>
                     </div>
-                    <button type="submit" className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>Add Item</button>
+                    <button type="submit" className='bg-primaryGreen rounded-md p-2 text-cleanWhite cursor-pointer hover:bg-darkGreen ease-in duration-100'>Edit Item</button>
                 </form>
             </div>
         </main>
     );
 }
 
-export default InventoryAddMedicine
+export default InventoryEditMedicine

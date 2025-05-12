@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { endpoints } from "../../config/config";
 import Header from "../Header";
+import { Plus } from "lucide-react";
 
 interface MedicineItem {
     name: string;
@@ -105,6 +106,13 @@ const InvItemDetails = () => {
                         </div>
                         <h3 className="text-gray-500">Medicine details are listed here.</h3>
                     </div>
+                    <button 
+                        onClick={() => navigate(`/inventory/item-list/edit/${itemData?.id}`)}
+                        className="flex items-center px-4 py-2 bg-primaryGreen rounded-md text-cleanWhite hover:bg-darkGreen transition-colors cursor-pointer"
+                        >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Edit Item
+                    </button>
                 </section>
                 
                 {/* Details Section */}
