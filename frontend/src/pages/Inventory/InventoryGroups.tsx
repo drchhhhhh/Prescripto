@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Settings, Users } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Users } from "lucide-react";
 import { FaMagnifyingGlass} from "react-icons/fa6"
 import Header from '../../components/Header';
 import AddGroupModal from '../../components/Inventory/InvAddGroupModal'; // adjust path as needed
+import { endpoints } from '../../config/config';
 
 // Define types for our data
 interface Medication {
@@ -13,103 +14,58 @@ interface Medication {
   price: number;
 }
 
+interface ApiGroup {
+  _id: string;
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 interface MedicineGroup {
-  id: number;
+  id: string; 
   name: string;
   icon: string;
   color: string;
   borderColor: string;
   description: string;
   medications: Medication[];
+  medicineCount: number;
 }
-
-// Mock data for medicine groups and medications
-const medicineGroupsData: MedicineGroup[] = [
-  {
-    id: 1,
-    name: "Antibiotics",
-    icon: "💊",
-    color: "bg-green-50",
-    borderColor: "border-primaryGreen",
-    description: "Medications that fight bacterial infections",
-    medications: [
-      { id: 101, name: "Amoxicillin", description: "Broad-spectrum antibiotic", stock: 145, price: 8.99 },
-      { id: 102, name: "Azithromycin", description: "Macrolide antibiotic", stock: 89, price: 12.50 },
-      { id: 103, name: "Ciprofloxacin", description: "Fluoroquinolone antibiotic", stock: 63, price: 15.75 },
-      { id: 104, name: "Doxycycline", description: "Tetracycline antibiotic", stock: 112, price: 6.99 },
-    ]
-  },
-  {
-    id: 2,
-    name: "Pain Relievers",
-    icon: "🩹",
-    color: "bg-green-50",
-    borderColor: "border-primaryGreen",
-    description: "Medications that reduce pain and inflammation",
-    medications: [
-      { id: 201, name: "Ibuprofen", description: "NSAID pain reliever", stock: 230, price: 5.49 },
-      { id: 202, name: "Acetaminophen", description: "Non-NSAID pain reliever", stock: 187, price: 4.99 },
-      { id: 203, name: "Naproxen", description: "Long-acting NSAID", stock: 94, price: 7.25 },
-    ]
-  },
-  {
-    id: 3,
-    name: "Antihypertensives",
-    icon: "❤️",
-    color: "bg-green-50",
-    borderColor: "border-primaryGreen",
-    description: "Medications for high blood pressure",
-    medications: [
-      { id: 301, name: "Lisinopril", description: "ACE inhibitor", stock: 78, price: 9.99 },
-      { id: 302, name: "Amlodipine", description: "Calcium channel blocker", stock: 65, price: 8.50 },
-      { id: 303, name: "Losartan", description: "Angiotensin II receptor blocker", stock: 120, price: 10.75 },
-    ]
-  },
-  {
-    id: 4,
-    name: "Antihistamines",
-    icon: "🌼",
-    color: "bg-green-50",
-    borderColor: "border-primaryGreen",
-    description: "Medications for allergies",
-    medications: [
-      { id: 401, name: "Cetirizine", description: "Second-generation antihistamine", stock: 156, price: 8.99 },
-      { id: 402, name: "Diphenhydramine", description: "First-generation antihistamine", stock: 134, price: 5.50 },
-    ]
-  },
-  {
-    id: 5,
-    name: "Antidiabetics",
-    icon: "🍬",
-    color: "bg-green-50",
-    borderColor: "border-primaryGreen",
-    description: "Medications for diabetes management",
-    medications: [
-      { id: 501, name: "Metformin", description: "Oral diabetes medication", stock: 98, price: 6.99 },
-      { id: 502, name: "Glipizide", description: "Sulfonylurea medication", stock: 57, price: 9.50 },
-    ]
-  }
-];
-
-// Custom icons for the medicine groups
-const groupIcons = {
-  1: <Box className="w-6 h-6 text-primaryGreen" />,
-  2: <Activity className="w-6 h-6 text-yellow-500" />,
-  3: <Activity className="w-6 h-6 text-red-500" />,
-  4: <Layout className="w-6 h-6 text-blue-500" />,
-  5: <Settings className="w-6 h-6 text-purple-500" />,
-};
 
 export default function InventoryGroups() {
   const [query, setQuery] = useState<string>("");
-  const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [showNewGroupModal, setShowNewGroupModal] = useState<boolean>(false);
+  const [medicineGroupsData, setMedicineGroupsData] = useState<MedicineGroup[]>([]);
+  const token = localStorage.getItem("token")
 
-  const toggleGroupExpansion = (groupId: number) => {
+  const toggleGroupExpansion = async (groupId: string) => {
     if (expandedGroups.includes(groupId)) {
       setExpandedGroups(expandedGroups.filter(id => id !== groupId));
     } else {
-      setExpandedGroups([...expandedGroups, groupId]);
+      try {
+        // Fetch medications when expanding
+        const response = await fetch(`${endpoints.getAllGroups}/${groupId}/medicines`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const medications = await response.json();
+        
+        setMedicineGroupsData(prev => prev.map(group => 
+          group.id === groupId 
+            ? { ...group, medications } 
+            : group
+        ));
+        setExpandedGroups([...expandedGroups, groupId]);
+      } catch (error) {
+        console.error("Failed to fetch medications:", error);
+      }
     }
   };
 
@@ -128,6 +84,75 @@ export default function InventoryGroups() {
     4: "bg-blue-50 border-blue-500 text-blue-600",
     5: "bg-purple-50 border-purple-500 text-purple-600",
   };
+
+  const fetchAllGroups = async () => {
+    try {
+      // First fetch all groups
+      const groupsResponse = await fetch(endpoints.getAllGroups, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!groupsResponse.ok) {
+        throw new Error(`Error: ${groupsResponse.status}`);
+      }
+
+      const apiGroups: ApiGroup[] = await groupsResponse.json();
+
+      // Then fetch medicine counts for each group
+      const groupsWithCounts = await Promise.all(
+        apiGroups.map(async (group) => {
+          const countResponse = await fetch(
+            endpoints.getMedicinesCountByGroup.replace(':id', group.id),
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              }
+            }
+          );
+
+          if (!countResponse.ok) {
+            console.error(`Failed to get count for group ${group.id}`);
+            return {
+              ...group,
+              medicineCount: 0
+            };
+          }
+
+          const countData = await countResponse.json();
+          return {
+            ...group,
+            medicineCount: countData.count || 0
+          };
+        })
+      );
+
+      // Map the API data to your MedicineGroup structure
+      const mappedGroups: MedicineGroup[] = groupsWithCounts.map((group, index) => ({
+        id: group.id,
+        name: group.name,
+        icon: group.emoji,
+        color: "bg-green-50",
+        borderColor: "border-primaryGreen",
+        description: group.description,
+        medications: [], // Empty array since we're not fetching medications here
+        medicineCount: group.medicineCount
+      }));
+
+      setMedicineGroupsData(mappedGroups);
+    } catch(error) {
+      console.error("Failed to fetch groups:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllGroups();
+  }, [token]);
 
   return (
     <>
@@ -197,7 +222,7 @@ export default function InventoryGroups() {
                     </div>
                     <div className="flex items-center space-x-4">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${colorClass}`}>
-                        {group.medications.length} items
+                        {group.medicineCount} items
                       </span>
                       {isExpanded ? (
                         <ChevronDown className="w-5 h-5 text-gray-500" />
@@ -256,7 +281,7 @@ export default function InventoryGroups() {
                   <Layout className="w-8 h-8 text-blue-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-darkGray">
-                  {medicineGroupsData.reduce((acc, group) => acc + group.medications.length, 0)}
+                  {medicineGroupsData.reduce((acc, group) => acc + group.medicineCount, 0)}
                 </h2>
                 <p className="text-gray-600 mt-1">Total Medications</p>
               </div>
@@ -291,7 +316,7 @@ export default function InventoryGroups() {
       </main>
       
       {/* Add New Group Modal */}
-      <AddGroupModal isOpen={showNewGroupModal} onClose={() => setShowNewGroupModal(false)} />
+      <AddGroupModal isOpen={showNewGroupModal} onClose={() => setShowNewGroupModal(false)} refreshGroups={fetchAllGroups} />
     </>
   );
 }

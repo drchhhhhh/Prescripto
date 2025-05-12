@@ -59,7 +59,7 @@ const InventoryAddMedicine = () => {
     }
 
     return (
-        <main className="bg-primaryBG w-full h-full">
+        <main className="bg-primaryBG w-full h-full pl-64">
             <Header />
 
             <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 mt-5">
