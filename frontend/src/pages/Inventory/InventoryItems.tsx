@@ -26,6 +26,7 @@ const InventoryItems = () => {
   }>({ field: 'name', direction: 'none' });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [branchFilter, setBranchFilter] = useState('');
+  const [userRole, setUserRole] = useState(false);
 
   const handleFilterSelect = (branch: string) => {
     setBranchFilter(branch);
@@ -65,7 +66,35 @@ const InventoryItems = () => {
       }
     };
 
+    const checkAdmin = async () => {
+      try {
+        const response = await fetch(endpoints.me, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          throw Error("Failed to fetch user details")
+        }
+        
+        const data = await response.json()
+
+        if (data.role === "Admin") {
+          setUserRole(true)
+        } else {
+          setUserRole(false)
+        }
+
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    }
+
     getAllItems();
+    checkAdmin();
   }, [token]);
 
   // Handle search filtering
@@ -175,7 +204,7 @@ const InventoryItems = () => {
             </form>
 
             {/* Branch Filter - Moved inline with search bar */}
-            <div className="relative">
+            { userRole ? (<div className="relative">
               <button
                 className="flex items-center justify-between bg-primaryBG border border-primaryGreen rounded-md px-4 py-2 min-w-[200px] text-primaryGreen hover:bg-lightGreen hover:text-darkGreen cursor-pointer"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -226,7 +255,7 @@ const InventoryItems = () => {
                   </ul>
                 </div>
               )}
-            </div>
+            </div>) : (<></>) }
           </section>
 
           {/* Item Display Section */}
