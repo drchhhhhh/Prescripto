@@ -4,6 +4,7 @@ import { FaMagnifyingGlass} from "react-icons/fa6"
 import Header from '../../components/Header';
 import AddGroupModal from '../../components/Inventory/InvAddGroupModal'; // adjust path as needed
 import { endpoints } from '../../config/config';
+import DelGroupModal from '../../components/Inventory/DelGroupModal'; // adjust path as needed
 
 // Define types for our data
 interface Medication {
@@ -43,6 +44,9 @@ export default function InventoryGroups() {
   const [showNewGroupModal, setShowNewGroupModal] = useState<boolean>(false);
   const [medicineGroupsData, setMedicineGroupsData] = useState<MedicineGroup[]>([]);
   const token = localStorage.getItem("token")
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [groupToDelete, setGroupToDelete] = useState<MedicineGroup | null>(null);
+
 
   const toggleGroupExpansion = async (groupId: string) => {
     if (expandedGroups.includes(groupId)) {
@@ -77,6 +81,8 @@ export default function InventoryGroups() {
     group.name.toLowerCase().includes(query.toLowerCase())
   );
 
+
+ 
   const groupColorClasses = {
     1: "bg-green-50 border-primaryGreen text-primaryGreen",
     2: "bg-yellow-50 border-yellow-500 text-yellow-600",
@@ -256,6 +262,17 @@ export default function InventoryGroups() {
                           </div>
                         ))}
                       </div>
+                      <div className="p-4 flex justify-end">
+                      {/* Delete Group Button */}
+                      <button 
+                        onClick={() => {
+                          setGroupToDelete(group);
+                          setShowDeleteModal(true)}}
+                        className="w-32 bg-white text-red-500 py-0.5 rounded-md border border-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
+                        >
+                        Delete Group
+                      </button>
+                    </div>
                     </div>
                   )}
                 </div>
@@ -317,6 +334,7 @@ export default function InventoryGroups() {
       
       {/* Add New Group Modal */}
       <AddGroupModal isOpen={showNewGroupModal} onClose={() => setShowNewGroupModal(false)} refreshGroups={fetchAllGroups} />
+      <DelGroupModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} groupName={groupToDelete?.name || ''} />
     </>
   );
 }
