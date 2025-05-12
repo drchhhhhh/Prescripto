@@ -240,7 +240,7 @@ export default function InventoryGroups() {
                             <div className="flex justify-between items-center mb-2">
                               <h4 className="font-medium text-darkGray">{med.name}</h4>
                               <span className={`text-sm font-medium ${colorClass.split(' ').filter(c => c.startsWith('text-')).join(' ')}`}>
-                                ${med.price.toFixed(2)}
+                                P {med.price.toFixed(2)}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 mb-3">{med.description}</p>
