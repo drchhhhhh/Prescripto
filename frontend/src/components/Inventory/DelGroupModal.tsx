@@ -3,14 +3,13 @@ import { X } from "lucide-react";
 interface DelGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
   groupName: string;
 }
 
 export default function DelGroupModal({
   isOpen,
   onClose,
-  onConfirm,
+
   groupName,
 }: DelGroupModalProps) {
   if (!isOpen) return null;
@@ -41,7 +40,7 @@ export default function DelGroupModal({
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
           >
             Delete

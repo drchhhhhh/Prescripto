@@ -3,8 +3,7 @@ import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Settings, Users
 import { FaMagnifyingGlass} from "react-icons/fa6"
 import Header from '../../components/Header';
 import AddGroupModal from '../../components/Inventory/InvAddGroupModal'; // adjust path as needed
-import DelGroupModal from '../../components/Inventory/DelGroupModal'; // adjust path if needed
-
+import DelGroupModal from '../../components/Inventory/DelGroupModal'; // adjust path as needed
 
 // Define types for our data
 interface Medication {
@@ -106,8 +105,7 @@ export default function InventoryGroups() {
   const [query, setQuery] = useState<string>("");
   const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
   const [showNewGroupModal, setShowNewGroupModal] = useState<boolean>(false);
-  const [medicineGroups, setMedicineGroups] = useState<MedicineGroup[]>(medicineGroupsData);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [groupToDelete, setGroupToDelete] = useState<MedicineGroup | null>(null);
 
 
@@ -123,37 +121,12 @@ export default function InventoryGroups() {
     setQuery(e.target.value);
   };
 
-  const filteredGroups = medicineGroups.filter(group => 
-  group.name.toLowerCase().includes(query.toLowerCase())
-);
-
-  const openDeleteModal = (group: MedicineGroup) => {
-  setGroupToDelete(group);
-  setShowDeleteModal(true);
-};
-
-  const confirmDeleteGroup = () => {
-    if (groupToDelete) {
-      const updatedGroups = medicineGroups.filter(group => group.id !== groupToDelete.id);
-      setMedicineGroups(updatedGroups);
-      setTotalStock(calculateTotalStock(updatedGroups));
-      setShowDeleteModal(false);
-      setGroupToDelete(null);
-    }
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setGroupToDelete(null);
-  };
-  const calculateTotalStock = (groups: MedicineGroup[]): number => {
-    return groups.reduce((acc, group) => 
-      acc + group.medications.reduce((medAcc, med) => medAcc + med.stock, 0), 0
-    );
-  };
-  const [totalStock, setTotalStock] = useState<number>(calculateTotalStock(medicineGroups));
+  const filteredGroups = medicineGroupsData.filter(group => 
+    group.name.toLowerCase().includes(query.toLowerCase())
+  );
 
 
+ 
   const groupColorClasses = {
     1: "bg-green-50 border-primaryGreen text-primaryGreen",
     2: "bg-yellow-50 border-yellow-500 text-yellow-600",
@@ -243,7 +216,6 @@ export default function InventoryGroups() {
                   {/* Expanded Content */}
                   {isExpanded && (
                     <div className="border-t border-gray-200">
-                     
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                         {group.medications.map(med => (
                           <div 
@@ -262,29 +234,26 @@ export default function InventoryGroups() {
                                 Stock: {med.stock}
                               </span>
                             </div>
-                            
                           </div>
-                          
                         ))}
                       </div>
-                       <div className="p-4 flex justify-end">
+                      <div className="p-4 flex justify-end">
                       {/* Delete Group Button */}
                       <button 
-                        onClick={() => openDeleteModal(group)} 
+                        onClick={() => {
+                          setGroupToDelete(group);
+                          setShowDeleteModal(true)}}
                         className="w-32 bg-white text-red-500 py-0.5 rounded-md border border-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
                         >
                         Delete Group
                       </button>
                     </div>
                     </div>
-                    
                   )}
                 </div>
               );
-              
             })}
           </div>
-          
           
           {/* Group Statistics Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -293,7 +262,7 @@ export default function InventoryGroups() {
                 <div className="bg-green-50 p-3 rounded-full mb-4">
                   <Box className="w-8 h-8 text-primaryGreen" />
                 </div>
-                <h2 className="text-2xl font-bold text-darkGray">{medicineGroups.length}</h2>
+                <h2 className="text-2xl font-bold text-darkGray">{medicineGroupsData.length}</h2>
                 <p className="text-gray-600 mt-1">Total Groups</p>
               </div>
             </div>
@@ -304,7 +273,7 @@ export default function InventoryGroups() {
                   <Layout className="w-8 h-8 text-blue-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-darkGray">
-                  {medicineGroups.reduce((acc, group) => acc + group.medications.length, 0)}
+                  {medicineGroupsData.reduce((acc, group) => acc + group.medications.length, 0)}
                 </h2>
                 <p className="text-gray-600 mt-1">Total Medications</p>
               </div>
@@ -315,7 +284,12 @@ export default function InventoryGroups() {
                 <div className="bg-yellow-50 p-3 rounded-full mb-4">
                   <Activity className="w-8 h-8 text-yellow-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-darkGray">{totalStock}</h2>
+                <h2 className="text-2xl font-bold text-darkGray">
+                  {medicineGroupsData.reduce((acc, group) => {
+                    const groupTotal = group.medications.reduce((sum, med) => sum + med.stock, 0);
+                    return acc + groupTotal;
+                  }, 0)}
+                </h2>
                 <p className="text-gray-600 mt-1">Total Stock</p>
               </div>
             </div>
@@ -335,7 +309,7 @@ export default function InventoryGroups() {
       
       {/* Add New Group Modal */}
       <AddGroupModal isOpen={showNewGroupModal} onClose={() => setShowNewGroupModal(false)} />
-      <DelGroupModal isOpen={showDeleteModal} onClose={cancelDelete} onConfirm={confirmDeleteGroup} groupName={groupToDelete?.name || ''} />
+      <DelGroupModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} groupName={groupToDelete?.name || ''} />
     </>
   );
 }
