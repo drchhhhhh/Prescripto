@@ -24,6 +24,16 @@ interface Endpoints {
     getGroupById: string;
     createGroup: string;
     deleteGroup: string;
+    dashInvStat: string;
+    dashRev: string;
+    dashMedAv: string;
+    dashMedShort: string;
+    dashTotalMed: string;
+    dashGroups: string;
+    dashMedSold: string;
+    dashInvGen: string;
+    dashTotalCust: string;
+    dashFreqBought: string;
 }
 
 export const endpoints: Endpoints = {
@@ -51,5 +61,15 @@ export const endpoints: Endpoints = {
     getMedicinesByGroup: `/api/medicines/group/:groupId`,
     getGroupById: `/api/groups/:id`,
     createGroup: `/api/groups`,
-    deleteGroup: `/api/groups/:id`
+    deleteGroup: `/api/groups/:id`,
+    dashInvStat: `/api/dashboard/inventory-status`,
+    dashRev: `/api/dashboard/revenue`,
+    dashMedAv: `/api/dashboard/medicines-available`,
+    dashMedShort: `/api/dashboard/medicine-shortage`,
+    dashTotalMed: `/api/dashboard/total-medicines`,
+    dashGroups: `/api/dashboard/medicine-groups`,
+    dashMedSold: `/api/dashboard/medicines-sold`,
+    dashInvGen: `/api/dashboard/invoices-generated`,
+    dashTotalCust: `/api/dashboard/total-customers`,
+    dashFreqBought: `/api/dashboard/frequently-bought`,
 } as const;
