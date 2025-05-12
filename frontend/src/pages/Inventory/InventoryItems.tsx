@@ -10,6 +10,7 @@ type Medicine = {
   id: string;
   group: string;
   stock: number;
+  branch: string;
 };
 
 type SortDirection = 'asc' | 'desc' | 'none';
@@ -53,12 +54,12 @@ const InventoryItems = () => {
           name: item.name,
           id: item.id,
           group: item.category,
-          stock: item.quantity
+          stock: item.quantity,
+          branch: item.branch
         }));
 
         setMedicines(transformedMedicines);
         setFilteredMedicines(transformedMedicines);
-        
       } catch (error) {
         console.error("Error fetching medicines:", error);
       }
@@ -69,14 +70,20 @@ const InventoryItems = () => {
 
   // Handle search filtering
   useEffect(() => {
-    const filtered = medicines.filter(medicine =>
-      medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      medicine.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      medicine.group.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      medicine.stock.toString().includes(searchTerm)
-    );
+    const filtered = medicines.filter(medicine => {
+      const matchesSearch = 
+        medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        medicine.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        medicine.group.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        medicine.stock.toString().includes(searchTerm);
+
+      const matchesBranch = branchFilter === '' || medicine.branch === branchFilter;
+
+      return matchesSearch && matchesBranch;
+    });
+
     setFilteredMedicines(filtered);
-  }, [searchTerm, medicines]);
+  }, [searchTerm, medicines, branchFilter]);
 
   // Handle sorting
   const handleSort = (field: SortableField) => {
@@ -174,13 +181,13 @@ const InventoryItems = () => {
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
               >
                 <span>
-                  {branchFilter === "balagtas"
-                    ? "Balagtas Branch"
-                    : branchFilter === "alangilan"
-                    ? "Alangilan Branch"
-                    : branchFilter === "bayan"
-                    ? "Bayan Branch"
-                    : "Branch Filter"}
+                  {branchFilter === "BatangasCity"
+                    ? "Batangas Branch"
+                    : branchFilter === "QuezonCity"
+                    ? "Quezon Branch"
+                    : branchFilter === "TaguigCity"
+                    ? "Taguig Branch"
+                    : "All Branches"}
                 </span>
                 <ChevronDown className="ml-2" />
               </button>
@@ -190,24 +197,31 @@ const InventoryItems = () => {
                   <ul>
                     <li
                       className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                      onClick={() => handleFilterSelect("balagtas")}
+                      onClick={() => handleFilterSelect("")}
                     >
                       <Store className="w-5 h-5 mr-2" />
-                      Balagtas Branch
+                      All Branches
                     </li>
                     <li
                       className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                      onClick={() => handleFilterSelect("alangilan")}
+                      onClick={() => handleFilterSelect("BatangasCity")}
                     >
                       <Store className="w-5 h-5 mr-2" />
-                      Alangilan Branch
+                      Batangas Branch
                     </li>
                     <li
                       className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
-                      onClick={() => handleFilterSelect("bayan")}
+                      onClick={() => handleFilterSelect("QuezonCity")}
                     >
                       <Store className="w-5 h-5 mr-2" />
-                      Bayan Branch
+                      Quezon Branch
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-lightGreen cursor-pointer text-gray-700 flex items-center"
+                      onClick={() => handleFilterSelect("TaguigCity")}
+                    >
+                      <Store className="w-5 h-5 mr-2" />
+                      Taguig Branch
                     </li>
                   </ul>
                 </div>
@@ -284,7 +298,7 @@ const InventoryItems = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <Link 
-                            to={`/inventory/item-list/${medicine.id}`}
+                            to={`/inventory/item-list/item/${medicine.id}`}
                             className="text-primaryGreen hover:text-darkGreen hover:underline"
                           >
                             View Full Detail
