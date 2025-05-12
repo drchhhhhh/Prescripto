@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity, Users } from "lucide-react";
+import { Plus, ChevronRight, ChevronDown, Box, Layout, Activity } from "lucide-react";
 import { FaMagnifyingGlass} from "react-icons/fa6"
 import Header from '../../components/Header';
 import AddGroupModal from '../../components/Inventory/InvAddGroupModal'; // adjust path as needed
@@ -54,7 +54,7 @@ export default function InventoryGroups() {
     } else {
       try {
         // Fetch medications when expanding
-        const response = await fetch(`${endpoints.getAllGroups}/${groupId}/medicines`, {
+        const response = await fetch(endpoints.getMedicinesByGroup.replace(":groupId", groupId), {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -80,16 +80,6 @@ export default function InventoryGroups() {
   const filteredGroups = medicineGroupsData.filter(group => 
     group.name.toLowerCase().includes(query.toLowerCase())
   );
-
-
- 
-  const groupColorClasses = {
-    1: "bg-green-50 border-primaryGreen text-primaryGreen",
-    2: "bg-yellow-50 border-yellow-500 text-yellow-600",
-    3: "bg-red-50 border-red-500 text-red-600",
-    4: "bg-blue-50 border-blue-500 text-blue-600",
-    5: "bg-purple-50 border-purple-500 text-purple-600",
-  };
 
   const fetchAllGroups = async () => {
     try {
@@ -133,20 +123,20 @@ export default function InventoryGroups() {
           const countData = await countResponse.json();
           return {
             ...group,
-            medicineCount: countData.count || 0
+            medicineCount: countData.medicineCount || 0
           };
         })
       );
 
       // Map the API data to your MedicineGroup structure
-      const mappedGroups: MedicineGroup[] = groupsWithCounts.map((group, index) => ({
+      const mappedGroups: MedicineGroup[] = groupsWithCounts.map((group) => ({
         id: group.id,
         name: group.name,
         icon: group.emoji,
         color: "bg-green-50",
         borderColor: "border-primaryGreen",
         description: group.description,
-        medications: [], // Empty array since we're not fetching medications here
+        medications: [],
         medicineCount: group.medicineCount
       }));
 
@@ -205,7 +195,7 @@ export default function InventoryGroups() {
           <div className="space-y-4 mb-6">
             {filteredGroups.map((group) => {
               const isExpanded = expandedGroups.includes(group.id);
-              const colorClass = groupColorClasses[group.id as keyof typeof groupColorClasses] || "bg-green-50 border-primaryGreen text-primaryGreen";
+              const colorClass = "bg-green-50 border-primaryGreen text-primaryGreen";
               
               return (
                 <div 
@@ -281,7 +271,7 @@ export default function InventoryGroups() {
           </div>
           
           {/* Group Statistics Dashboard */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="bg-cleanWhite rounded-lg overflow-hidden shadow-sm border border-green-100">
               <div className="p-6 flex flex-col items-center">
                 <div className="bg-green-50 p-3 rounded-full mb-4">
@@ -310,22 +300,9 @@ export default function InventoryGroups() {
                   <Activity className="w-8 h-8 text-yellow-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-darkGray">
-                  {medicineGroupsData.reduce((acc, group) => {
-                    const groupTotal = group.medications.reduce((sum, med) => sum + med.stock, 0);
-                    return acc + groupTotal;
-                  }, 0)}
+                  {medicineGroupsData.reduce((acc, group) => acc + group.medicineCount, 0)}
                 </h2>
                 <p className="text-gray-600 mt-1">Total Stock</p>
-              </div>
-            </div>
-            
-            <div className="bg-cleanWhite rounded-lg overflow-hidden shadow-sm border border-purple-100">
-              <div className="p-6 flex flex-col items-center">
-                <div className="bg-purple-50 p-3 rounded-full mb-4">
-                  <Users className="w-8 h-8 text-purple-500" />
-                </div>
-                <h2 className="text-2xl font-bold text-darkGray">4</h2>
-                <p className="text-gray-600 mt-1">Suppliers</p>
               </div>
             </div>
           </div>
@@ -334,7 +311,7 @@ export default function InventoryGroups() {
       
       {/* Add New Group Modal */}
       <AddGroupModal isOpen={showNewGroupModal} onClose={() => setShowNewGroupModal(false)} refreshGroups={fetchAllGroups} />
-      <DelGroupModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} groupName={groupToDelete?.name || ''} />
+      <DelGroupModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} groupName={groupToDelete?.name || ''} groupId={groupToDelete?.id || ''} refreshGroups={fetchAllGroups} />
     </>
   );
 }

@@ -1,21 +1,50 @@
 import { X } from "lucide-react";
+import { endpoints } from "../../config/config";
+import { useNavigate } from "react-router";
 
 interface DelGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
+  refreshGroups: () => void;
   groupName: string;
+  groupId: string;
 }
 
 export default function DelGroupModal({
   isOpen,
   onClose,
-
+  refreshGroups,
+  groupId,
   groupName,
 }: DelGroupModalProps) {
   if (!isOpen) return null;
 
+  const token = localStorage.getItem("token")
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(endpoints.deleteGroup.replace(':id', groupId), {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response}`);
+      }
+
+      onClose();
+      refreshGroups();
+      navigate("/inventory/groups", { state: { refresh: true } });
+    } catch (error) {
+      console.error("Failed to delete group:", error);
+    }
+  }
+
   return (
-    <div className="fixed inset-0 bg-darkGray bg-opacity-50 flex items-center justify-center p-4 z-50 font-poppins">
+    <div className="fixed inset-0 bg-darkGray/50 flex items-center justify-center p-4 z-50 font-poppins">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <h2 className="text-lg font-medium text-darkGray">Delete Group</h2>
@@ -40,7 +69,7 @@ export default function DelGroupModal({
             Cancel
           </button>
           <button
-            
+            onClick={handleSubmit}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
           >
             Delete

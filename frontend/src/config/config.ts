@@ -20,6 +20,7 @@ interface Endpoints {
     getTransacId: string;
     getAllGroups: string;
     getMedicinesCountByGroup: string;
+    getMedicinesByGroup: string;
     getGroupById: string;
     createGroup: string;
     deleteGroup: string;
@@ -46,7 +47,8 @@ export const endpoints: Endpoints = {
     getTransacRec: `/api/transactions/receipt/:receiptNumber`,
     getTransacId: `/api/transactions/`,
     getAllGroups: `/api/groups`,
-    getMedicinesCountByGroup: `/api/:id/medicines/count`,
+    getMedicinesCountByGroup: `/api/groups/:id/medicines/count`,
+    getMedicinesByGroup: `/api/medicines/group/:groupId`,
     getGroupById: `/api/groups/:id`,
     createGroup: `/api/groups`,
     deleteGroup: `/api/groups/:id`
