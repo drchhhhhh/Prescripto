@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { endpoints } from '../../config/config';
 import Header from '../../components/Header';
 
@@ -15,6 +15,25 @@ const InventoryAddMedicine = () => {
     })
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
+    const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const res = await fetch(endpoints.getAllGroups, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                setGroups(data); // Expecting an array like [{ id: '123', name: 'Antibiotics' }, ...]
+            } catch (err) {
+                console.error('Failed to fetch groups', err);
+            }
+        };
+
+        fetchGroups();
+    }, []);
 
     const handleChange = ( e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> ) => {
         setForm({
@@ -26,10 +45,12 @@ const InventoryAddMedicine = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const selectedGroup = groups.find(group => group.name === form.category);
             const formData = {
                 ...form,
-                category: form.category || "none"
-            }
+                category: form.category || "None",
+                group: selectedGroup ? selectedGroup.id : null
+            };
 
             const response = await fetch(endpoints.createMed, {
                 method: "POST",
@@ -38,25 +59,18 @@ const InventoryAddMedicine = () => {
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(formData)
-            })
+            });
 
-            if (!response) {
-                throw new Error(`Error: ${response}`);
-            }
-            
-            if (response.ok) {
-                // CREATE A POPUP SAYING SUCCESSFULLY ADDED ITEM
-                navigate("/inventory")
-            }
-            
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
 
-            const data = await response.json()
-            console.log(data)
-            return data
+            const data = await response.json();
+            navigate("/inventory");
+            return data;
+
         } catch (error) {
-            console.error("Failed to add item:", error)
+            console.error("Failed to add item:", error);
         }
-    }
+    };
 
     return (
         <main className="bg-primaryBG w-full h-full pl-64">
@@ -74,7 +88,7 @@ const InventoryAddMedicine = () => {
                             <h1 className='text-darkGray text-xl font-bold'>{'>'}</h1>
                             <h1 className='text-darkGreen text-2xl font-bold'>Add New Medicine</h1>
                         </div>
-                        <h3>*All fields are mandatory, except mentioned as {'(optional)'}.</h3>
+                        <h3>*All fields are mandatory and need to be filled.</h3>
                     </div>
                 </section>
                 
@@ -110,7 +124,7 @@ const InventoryAddMedicine = () => {
                         {/* Medicine Group (Dropdown) */}
                         <div className="flex flex-col flex-1 min-w-[200px]">
                             <label className="text-sm font-medium text-gray-700 mb-1">
-                                Medicine Group {"(Optional)"}
+                                Medicine Group*
                             </label>
                             <select
                                 name="category"
@@ -118,7 +132,11 @@ const InventoryAddMedicine = () => {
                                 className="px-3 py-2 border border-gray-300 rounded-md bg-inputBG focus:outline-none focus:ring-2 focus:ring-primaryGreen"
                             >
                                 <option value="">- Select Group -</option>
-                                {/* Create a map that would put all the created groups here */}
+                                {groups.map((group) => (
+                                    <option key={group.id} value={group.name}>
+                                        {group.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
