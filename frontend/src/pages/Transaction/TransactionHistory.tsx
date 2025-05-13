@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { FaMagnifyingGlass, FaChevronDown } from "react-icons/fa6"
 import Header from "../../components/Header"
+import { endpoints } from "../../config/config"
 
 type Transaction = {
   receiptNo: string
@@ -27,25 +28,46 @@ const TransactionHistory = () => {
   }>({ field: "date", direction: "desc" })
   const [filterOption, setFilterOption] = useState<string>("")
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false)
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      const mockData: Transaction[] = [
-        { receiptNo: "001", date: "2025-04-23", medicineName: "Augmentin 625 Duo", quantity: 5, unitPrice: 8.0, totalAmount: 40.0 },
-        { receiptNo: "002", date: "2025-04-23", medicineName: "Azithral 500 Tablet", quantity: 3, unitPrice: 9.0, totalAmount: 27.0 },
-        { receiptNo: "003", date: "2025-04-22", medicineName: "Ascoril LS Syrup", quantity: 1, unitPrice: 12.5, totalAmount: 12.5 },
-        { receiptNo: "004", date: "2025-04-21", medicineName: "Azee 500 Tablet", quantity: 2, unitPrice: 15.75, totalAmount: 31.5 },
-        { receiptNo: "005", date: "2025-04-20", medicineName: "Allegra 120mg Tablet", quantity: 4, unitPrice: 7.25, totalAmount: 29.0 },
-        { receiptNo: "006", date: "2025-04-19", medicineName: "Alex Syrup", quantity: 1, unitPrice: 18.0, totalAmount: 18.0 },
-        { receiptNo: "007", date: "2025-04-18", medicineName: "Arnozyclov 625 Tablet", quantity: 3, unitPrice: 11.5, totalAmount: 34.5 },
-        { receiptNo: "008", date: "2025-04-17", medicineName: "Avil 25 Tablet", quantity: 6, unitPrice: 3.5, totalAmount: 21.0 },
-      ]
-      setTransactions(mockData)
-      setFilteredTransactions(mockData)
+    const fetchAllTransac = async () => {
+      try {
+        const response = await fetch(endpoints.getTransacAll, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions")
+        }
+
+        const data = await response.json()
+
+        // Flatten the transactions for table display
+        const transformed = data.flatMap((transaction: any) =>
+          transaction.items.map((item: any) => ({
+            receiptNo: transaction.receiptNumber,
+            date: new Date(transaction.createdAt).toLocaleDateString(),
+            medicineName: item?.medicine?.name || "Unknown", // fallback if medicine is null
+            quantity: item.quantity,
+            unitPrice: item.price,
+            totalAmount: item.price * item.quantity,
+          }))
+        )
+
+        setTransactions(transformed)
+      } catch (error) {
+        console.error("Failed to fetch all transactions: ", error)
+      }
     }
-    fetchTransactions()
-  }, [])
+
+    if (token) {
+      fetchAllTransac()
+    }
+  }, [token])
 
   useEffect(() => {
     const filtered = transactions.filter(
