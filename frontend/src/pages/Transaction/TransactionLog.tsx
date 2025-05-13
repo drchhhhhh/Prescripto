@@ -1,16 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Minus, Trash2 } from "lucide-react"
 import Header from "../../components/Header"
 import TransactionModal from "../../components/TransactionModal"
+import { endpoints } from "../../config/config"
 
 export interface MedicineItem {
   id: string
   name: string
   price: number
   quantity: number
+}
+
+interface RawMedicine {
+  id: string
+  nameGroup: string
+  items: {
+    _id: string
+    expirationDate: string
+    price: string
+    quantity: string
+  }[]
 }
 
 const TransactionForm = () => {
@@ -20,6 +32,28 @@ const TransactionForm = () => {
   const [showModal, setShowModal] = useState(false)
   const [isTransactionValid, setIsTransactionValid] = useState(true)
   const [receiptNumber, setReceiptNumber] = useState("001")
+  const [rawMedicines, setRawMedicines] = useState<RawMedicine[]>([])
+  const token = localStorage.getItem("token")
+
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const res = await fetch(endpoints.getGroupedMedAll, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
+        const data: RawMedicine[] = await res.json()
+        setRawMedicines(data)
+        console.log(data)
+      } catch (err) {
+        console.error("Failed to fetch medicines", err)
+      }
+    }
+
+    fetchMedicines()
+  }, [])
 
   const addNewItem = () => {
     setMedicineItems([...medicineItems, { id: Date.now().toString(), name: "", price: 0, quantity: 1 }])
@@ -52,10 +86,65 @@ const TransactionForm = () => {
   const taxAmount = subtotal * taxPercentage
   const totalAmount = subtotal + taxAmount - discountValue
 
-  const submitTransaction = () => {
+  const submitTransaction = async () => {
     const hasEmptyNames = medicineItems.some((item) => !item.name.trim())
     setIsTransactionValid(!hasEmptyNames)
     setShowModal(true)
+
+    if (hasEmptyNames) return
+
+    try {
+      const items = medicineItems.map((item) => {
+        const matchedMed = rawMedicines.find((med) => med.nameGroup === item.name)
+        const nearestItem = matchedMed?.items.reduce((earliest, current) =>
+          new Date(current.expirationDate) < new Date(earliest.expirationDate)
+            ? current
+            : earliest
+        )
+
+        console.log(nearestItem)
+
+        return {
+          medicineId: nearestItem?._id,
+          quantity: item.quantity,
+        }
+      }).filter(item => item.medicineId)
+
+      if (items.length === 0) {
+        alert("No valid medicines selected.")
+        return
+      }
+
+      const payload = {
+        items,
+        notes: "Test"
+      }
+
+      const response = await fetch(endpoints.createTransac, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("Failed to save transaction", errorData)
+        alert("Transaction failed: " + errorData.message)
+        return
+      }
+
+      const result = await response.json()
+      console.log("Transaction saved:", result)
+
+      // Optionally reset form
+      setMedicineItems([{ id: "1", name: "", price: 0, quantity: 1 }])
+    } catch (error) {
+      console.error("Error submitting transaction:", error)
+      alert("Unexpected error occurred.")
+    }
   }
 
   const dismissModal = () => {
@@ -66,6 +155,9 @@ const TransactionForm = () => {
     }
   }
 
+  const capitalizeWords = (str: string) =>
+  str.replace(/\b\w/g, char => char.toUpperCase())
+
   return (
     <>
       <Header />
@@ -75,13 +167,12 @@ const TransactionForm = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col">
               <div className="flex flex-row gap-2 items-center">
-                <Link className="text-darkGray text-2xl font-bold" to="/transactions">
+                <h1 className="text-darkGray text-2xl font-bold">
                   Transaction
-                </Link>
+                </h1>
                   <h1 className="text-darkGray text-xl font-bold">{">"}</h1>
                   <h1 className="text-darkGreen text-2xl font-bold">Transaction Log</h1>
               </div>
-              <h3 className="text-gray-600">All fields are mandatory, except mentioned as (optional).*</h3>
             </div>
             <button
               onClick={addNewItem}
@@ -109,21 +200,58 @@ const TransactionForm = () => {
               {medicineItems.map((item, index) => (
                 <li key={item.id} className="grid grid-cols-12 gap-4">
                   <div className="col-span-6">
-                    <input
-                      type="text"
-                      placeholder="Medicine name"
+                    <select
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primaryGreen"
                       value={item.name}
-                      onChange={(e) => updateItemField(item.id, "name", e.target.value)}
-                    />
+                      onChange={(e) => {
+                        const selectedName = e.target.value
+                        const selectedMed = rawMedicines.find(med => med.nameGroup === selectedName)
+
+                        if (selectedMed && selectedMed.items.length > 0) {
+                          const nearest = selectedMed.items.reduce((earliest, current) =>
+                            new Date(current.expirationDate) < new Date(earliest.expirationDate)
+                              ? current
+                              : earliest
+                          )
+                          const price = parseFloat(nearest.price) || 0
+
+                          setMedicineItems(prev =>
+                            prev.map(m =>
+                              m.id === item.id ? { ...m, name: selectedName, price } : m
+                            )
+                          )
+                        } else {
+                          // If no valid items, still update name and reset price
+                          setMedicineItems(prev =>
+                            prev.map(m =>
+                              m.id === item.id ? { ...m, name: selectedName, price: 0 } : m
+                            )
+                          )
+                        }
+                      }}
+                    >
+                      <option value="">Select a medicine...</option>
+                      {rawMedicines.map((med) => {
+                        const nearestItem = med.items.reduce((earliest, current) =>
+                          new Date(current.expirationDate) < new Date(earliest.expirationDate)
+                            ? current
+                            : earliest
+                        , med.items[0])
+
+                        const expDate = nearestItem?.expirationDate
+                          ? new Date(nearestItem.expirationDate).toLocaleDateString()
+                          : "N/A"
+
+                        return (
+                          <option key={med.id} value={med.nameGroup}>
+                            {capitalizeWords(med.nameGroup)} (Exp: {expDate})
+                          </option>
+                        )
+                      })}
+                    </select>
                   </div>
-                  <div className="col-span-3">
-                    <input
-                      type="number"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primaryGreen"
-                      value={item.price}
-                      onChange={(e) => updateItemField(item.id, "price", Number.parseFloat(e.target.value) || 0)}
-                    />
+                  <div className="col-span-3 w-full p-2 border border-gray-200 bg-gray-100 rounded-md text-gray-700">
+                    {item.price.toFixed(2)}
                   </div>
                   <div className="col-span-3 flex items-center">
                     <button

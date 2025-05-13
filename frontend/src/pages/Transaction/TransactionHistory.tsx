@@ -113,9 +113,9 @@ const TransactionHistory = () => {
         <section className="flex flex-row justify-between items-center py-5">
           <div className="flex flex-col">
             <div className="flex flex-row gap-2 items-center">
-              <Link className="text-darkGray text-2xl font-bold" to="/transactions">
+              <h1 className="text-darkGray text-2xl font-bold">
                 Transaction
-              </Link>
+              </h1>
               <h1 className="text-darkGray text-xl font-bold">{">"}</h1>
               <h1 className="text-darkGreen text-2xl font-bold">Transaction History</h1>
             </div>

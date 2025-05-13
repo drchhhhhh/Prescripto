@@ -251,3 +251,41 @@ export const getMedicinesByGroup = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Group medicines by case-insensitive name, sorted by expiration date (soonest first)
+export const getGroupedMedicinesByName = async (req, res) => {
+  try {
+    const medicines = await Medicine.find();
+
+    // Group by normalized name (case-insensitive)
+    const grouped = medicines.reduce((acc, med) => {
+      const normalizedName = med.name.trim().toLowerCase();
+
+      if (!acc[normalizedName]) {
+        acc[normalizedName] = [];
+      }
+
+      acc[normalizedName].push(med);
+      return acc;
+    }, {});
+
+    // Convert the object to an array and sort each group by expiration date
+    const groupedArray = Object.entries(grouped).map(([normalizedName, items]) => {
+      // Sort items by expiration date: nearest first
+      const sortedItems = items.sort((a, b) => {
+        const dateA = new Date(a.expirationDate);
+        const dateB = new Date(b.expirationDate);
+        return dateA - dateB;
+      });
+
+      return {
+        nameGroup: normalizedName,
+        items: sortedItems,
+      };
+    });
+
+    res.status(200).json(groupedArray);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

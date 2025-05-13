@@ -6,7 +6,8 @@ import {
   updateMedicine, 
   deleteMedicine,
   getMedicinesByExpirationStatus,
-  getMedicinesByGroup
+  getMedicinesByGroup,
+  getGroupedMedicinesByName
 } from '../controllers/medicineController.js';
 import { protect, adminOnly } from '../middleware/auth.js';
 
@@ -20,6 +21,9 @@ router.get('/', getAllMedicines);
 
 // Route: GET /api/medicines/expiration
 router.get('/expiration', getMedicinesByExpirationStatus);
+
+// Route GET /api/medicines/grouped-by-name
+router.get("/grouped-by-name", getGroupedMedicinesByName);
 
 // Route: GET /api/medicines/:id
 router.get('/:id', getMedicineById);
@@ -35,5 +39,6 @@ router.put('/:id', updateMedicine);
 
 // Route: DELETE /api/medicines/:id - Admin only
 router.delete('/:id', adminOnly, deleteMedicine);
+
 
 export default router;
