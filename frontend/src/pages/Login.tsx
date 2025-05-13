@@ -15,7 +15,7 @@ const LoginPage = () => {
   const [isWrongCreds, setIsWrongCreds] = useState(false);
   const [isServerError, setIsServerError] = useState(false);
 
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

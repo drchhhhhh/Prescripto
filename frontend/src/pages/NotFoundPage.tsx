@@ -11,7 +11,7 @@ export default function NotFoundPage() {
       </p>
       <p className='text-xl text-darkGray mb-6'>Please check the URL and try again.</p>
       <Link 
-        to="/" 
+        to="/dashboard" 
         className='bg-primaryGreen text-cleanWhite px-8 py-2 rounded-md hover:bg-darkGreen transition-colors'
       >
         Home

@@ -10,8 +10,13 @@ import {
   Layout,
   Package,
   BarChart2,
-  User
 } from 'lucide-react';
+import { endpoints } from '../config/config';
+
+interface User {
+  username: string;
+  role: string;
+}
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,7 +25,33 @@ export default function Navbar() {
 
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [userData, setUserData] = useState<User | null>(null);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const response = await fetch(endpoints.me, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok){
+          throw new Error("Failed to fetch user data.");
+        }
+
+        const data: User = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    
+    getUserData();
+  }, [token])
 
   // Check if current path is in inventory or transaction routes
   useEffect(() => {
@@ -51,18 +82,29 @@ export default function Navbar() {
       setIsTransactionOpen(prev => !prev);
       setIsInventoryOpen(false);
     }
-    setIsProfileMenuOpen(false);
   };
 
-  // Close profile menu when clicking elsewhere
-  useEffect(() => {
-    const handleOutsideClick = () => {
-      if (isProfileMenuOpen) setIsProfileMenuOpen(false);
-    };
-    
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, [isProfileMenuOpen]);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(endpoints.logout, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      
+      if(!response.ok) {
+        throw new Error("Error logging out user");
+      }
+
+      localStorage.removeItem("token")
+      localStorage.removeItem("userID")
+      navigate("/login")
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm font-poppins z-50">
@@ -76,47 +118,15 @@ export default function Navbar() {
       <section className="p-4 flex items-center justify-between border-b border-gray-100 relative">
         <figure className="flex items-center">
           <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-primaryGreen">
-            <span className="text-sm font-medium">A</span>
+            <span className="text-sm font-medium">
+              {userData?.username ? userData.username.charAt(0).toUpperCase() : ''}
+            </span>
           </div>
           <figcaption className="ml-3">
-            <h3 className="font-semibold text-darkGray">Arshie</h3>
-            <p className="text-xs text-primaryGreen">Pharmacist</p>
+            <h3 className="font-semibold text-darkGray">{userData?.username}</h3>
+            <p className="text-xs text-primaryGreen">{userData?.role}</p>
           </figcaption>
         </figure>
-        <div className="relative">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsProfileMenuOpen((prev) => !prev);
-            }}
-            className="p-1 rounded-full hover:bg-green-50"
-            aria-label="Profile menu"
-          >
-            <User className="h-5 w-5 text-primaryGreen" />
-          </button>
-          {isProfileMenuOpen && (
-            <nav className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-              <ul>
-                <li>
-                  <button
-                    onClick={() => navigate('/profile')}
-                    className={`block w-full text-left px-4 py-2 ${isActive('/profile') ? 'bg-green-50 text-primaryGreen font-medium' : 'text-gray-700 hover:bg-green-50'}`}
-                  >
-                    Profile
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/settings')}
-                    className={`block w-full text-left px-4 py-2 ${isActive('/settings') ? 'bg-green-50 text-primaryGreen font-medium' : 'text-gray-700 hover:bg-green-50'}`}
-                  >
-                    Settings
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-        </div>
       </section>
 
       {/* Navigation */}
@@ -241,8 +251,8 @@ export default function Navbar() {
       {/* Logout */}
       <footer className="p-4 border-t border-gray-100">
         <button
-          onClick={() => console.log('Logout')} // Replace with actual logout logic
-          className="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen"
+          onClick={handleLogout}
+          className="flex items-center px-4 py-3 hover:bg-green-50 w-full rounded-md border border-primaryGreen text-primaryGreen cursor-pointer"
         >
           <LogOut className="h-5 w-5 mr-3" />
           <span>Logout</span>
