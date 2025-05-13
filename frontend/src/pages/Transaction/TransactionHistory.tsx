@@ -51,7 +51,7 @@ const TransactionHistory = () => {
           transaction.items.map((item: any) => ({
             receiptNo: transaction.receiptNumber,
             date: new Date(transaction.createdAt).toLocaleDateString(),
-            medicineName: item?.medicine?.name || "Unknown", // fallback if medicine is null
+            medicineName: item?.medicine?.name || "Unknown",
             quantity: item.quantity,
             unitPrice: item.price,
             totalAmount: item.price * item.quantity,

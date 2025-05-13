@@ -8,6 +8,7 @@ interface Endpoints {
     updateUser: string;
     deleteUser: string;
     getMedAll: string;
+    getGroupedMedAll: string;
     getMedExp: string;
     getMedId: string;
     createMed: string;
@@ -46,6 +47,7 @@ export const endpoints: Endpoints = {
     updateUser: `/api/users/`,
     deleteUser: `/api/users/`,
     getMedAll: `/api/medicines`,
+    getGroupedMedAll: `/api/medicines/grouped-by-name`,
     getMedExp: `/api/medicines/expiration`,
     getMedId: `/api/medicines/`,
     createMed: `/api/medicines/`,

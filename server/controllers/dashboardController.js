@@ -101,37 +101,41 @@ const calculateInventoryStatus = async (medicines) => {
 const findFrequentlyBoughtItem = async (transactions) => {
   // Create a map to count occurrences of each medicine
   const medicineCount = {};
-  
+
   // Count occurrences of each medicine in purchase transactions
   transactions.forEach(transaction => {
     if (transaction.transactionType === "purchase") {
       transaction.items.forEach(item => {
-        const medicineId = item.medicine._id.toString();
-        const medicineName = item.medicine.name;
-        
-        if (!medicineCount[medicineId]) {
-          medicineCount[medicineId] = {
-            name: medicineName,
-            count: 0
-          };
+        // Ensure item.medicine exists and has an _id before accessing it
+        const medicine = item.medicine;
+        if (medicine && medicine._id) {
+          const medicineId = medicine._id.toString();
+          const medicineName = medicine.name;
+
+          if (!medicineCount[medicineId]) {
+            medicineCount[medicineId] = {
+              name: medicineName,
+              count: 0
+            };
+          }
+
+          medicineCount[medicineId].count += item.quantity;
         }
-        
-        medicineCount[medicineId].count += item.quantity;
       });
     }
   });
-  
+
   // Find the medicine with the highest count
   let maxCount = 0;
   let frequentItem = "None";
-  
+
   Object.values(medicineCount).forEach(item => {
     if (item.count > maxCount) {
       maxCount = item.count;
       frequentItem = item.name;
     }
   });
-  
+
   return frequentItem;
 };
 
