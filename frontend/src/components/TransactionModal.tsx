@@ -1,19 +1,69 @@
 "use client"
 
 import type React from "react"
-
 import { CheckCircle, AlertCircle } from "lucide-react"
 import type { MedicineItem } from "../pages/Transaction/TransactionLog"
+
+interface TransacReceiptItem {
+  name: string
+  quantity: number
+  price: number
+  total: number
+}
+
+interface TransacReceipt {
+  receiptNumber: string
+  date: string
+  branch: string
+  items: TransacReceiptItem[]
+  totalAmount: number
+  cashier: string
+  notes: string
+}
+
+interface TransacTransactionItem {
+  _id: string
+  medicine: {
+    _id: string
+    name: string
+    category: string
+    price: number
+    expirationStatus: string
+    id: string
+  }
+  quantity: number
+  price: number
+}
+
+interface TransacTransaction {
+  _id: string
+  receiptNumber: string
+  transactionType: string
+  items: TransacTransactionItem[]
+  totalAmount: number
+  branch: string
+  createdBy: {
+    _id: string
+    username: string
+  }
+  notes: string
+  createdAt: string
+  __v: number
+}
+
+interface TransacData {
+  transaction: TransacTransaction
+  receipt: TransacReceipt
+}
 
 interface TransactionModalProps {
   show: boolean
   valid: boolean
   items: MedicineItem[]
   subtotal: number
-  taxAmount: number
-  discount: number
   total: number
   receiptNumber: string
+  transacData: TransacData
   onClose: () => void
 }
 
@@ -22,10 +72,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   valid,
   items,
   subtotal,
-  taxAmount,
-  discount,
-  total,
-  receiptNumber,
+  transacData,
   onClose,
 }) => {
   if (!show) return null
@@ -42,6 +89,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
     second: "2-digit",
     hour12: false,
   })
+
+  console.log("ASKJDHAJKSDHJKSA", transacData)
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 font-poppins">
@@ -61,7 +110,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 </div>
                 <div className="flex justify-between mb-4 pb-4 border-b">
                   <div className="font-medium">Receipt No.</div>
-                  <div>{receiptNumber}</div>
+                  <div>{transacData.receipt.receiptNumber}</div>
                 </div>
               </div>
               
@@ -75,8 +124,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item) => (
-                      <tr key={item.id} className="mb-2">
+                    {transacData.receipt.items.map((item, index) => (
+                      <tr key={index} className="mb-2">
                         <td className="text-left">{item.quantity}</td>
                         <td className="text-left">{item.name}</td>
                         <td className="text-right">{item.price.toFixed(2)}</td>
@@ -93,15 +142,11 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 </div>
                 <div className="flex justify-between mb-1">
                   <dt>Tax (12%)</dt>
-                  <dd>{taxAmount.toFixed(2)}</dd>
-                </div>
-                <div className="flex justify-between mb-1">
-                  <dt>Discount</dt>
-                  <dd>{discount.toFixed(2)}</dd>
+                  <dd>{0.12}</dd>
                 </div>
                 <div className="flex justify-between text-green-600 font-bold">
                   <dt>Total</dt>
-                  <dd>{total.toFixed(2)}</dd>
+                  <dd>{transacData.receipt.totalAmount}</dd>
                 </div>
               </dl>
             </div>

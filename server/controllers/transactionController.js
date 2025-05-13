@@ -183,17 +183,35 @@ export const createTransaction = async (req, res) => {
       .populate("createdBy", "username")
 
     // Generate receipt data
+    const receiptItems = populatedTransaction.items.map((item) => {
+      const subTotal = item.quantity * item.price
+      const taxAmount = subTotal * 0.12
+      const total = subTotal + taxAmount
+
+      return {
+        name: item.medicine.name,
+        quantity: item.quantity,
+        price: item.price,
+        subTotal,
+        taxAmount,
+        total,
+      }
+    })
+
+    // Sum up totals
+    const totalSubAmount = receiptItems.reduce((sum, item) => sum + item.subTotal, 0)
+    const totalTax = receiptItems.reduce((sum, item) => sum + item.taxAmount, 0)
+    const grandTotal = totalSubAmount + totalTax
+
+    // Full receipt object
     const receipt = {
       receiptNumber: populatedTransaction.receiptNumber,
       date: populatedTransaction.createdAt,
       branch: populatedTransaction.branch,
-      items: populatedTransaction.items.map((item) => ({
-        name: item.medicine.name,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.quantity * item.price,
-      })),
-      totalAmount: populatedTransaction.totalAmount,
+      items: receiptItems,
+      totalBeforeTax: totalSubAmount,
+      totalTax: totalTax,
+      totalAmount: grandTotal,
       cashier: populatedTransaction.createdBy.username,
       notes: populatedTransaction.notes,
     }

@@ -28,11 +28,10 @@ interface RawMedicine {
 const TransactionForm = () => {
   const [medicineItems, setMedicineItems] = useState<MedicineItem[]>([{ id: "1", name: "", price: 0, quantity: 1 }])
   const [taxPercentage, setTaxPercentage] = useState(0.12)
-  const [discountValue, setDiscountValue] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [isTransactionValid, setIsTransactionValid] = useState(true)
-  const [receiptNumber, setReceiptNumber] = useState("001")
   const [rawMedicines, setRawMedicines] = useState<RawMedicine[]>([])
+  const [transactionData, setTransactionData] = useState(null);
   const token = localStorage.getItem("token")
 
   useEffect(() => {
@@ -84,14 +83,16 @@ const TransactionForm = () => {
 
   const subtotal = medicineItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const taxAmount = subtotal * taxPercentage
-  const totalAmount = subtotal + taxAmount - discountValue
+  const totalAmount = subtotal + taxAmount
 
   const submitTransaction = async () => {
     const hasEmptyNames = medicineItems.some((item) => !item.name.trim())
     setIsTransactionValid(!hasEmptyNames)
-    setShowModal(true)
 
-    if (hasEmptyNames) return
+    if (hasEmptyNames) {
+      setShowModal(true);
+      return
+    }
 
     try {
       const items = medicineItems.map((item) => {
@@ -138,14 +139,20 @@ const TransactionForm = () => {
 
       const result = await response.json()
       console.log("Transaction saved:", result)
-
-      // Optionally reset form
+      setTransactionData(result);
       setMedicineItems([{ id: "1", name: "", price: 0, quantity: 1 }])
     } catch (error) {
       console.error("Error submitting transaction:", error)
       alert("Unexpected error occurred.")
     }
   }
+  
+  useEffect(() => {
+    if (transactionData) {
+      console.log("IEIEIEIE2", transactionData)
+      setShowModal(true);
+    }
+  }, [transactionData]);
 
   const dismissModal = () => {
     setShowModal(false)
@@ -299,10 +306,6 @@ const TransactionForm = () => {
                   <span>Tax (12%)</span>
                   <span>{taxAmount.toFixed(2)}</span>
                 </div>
-                <div className="mb-2 flex justify-between">
-                  <span>Discount</span>
-                  <span>{discountValue.toFixed(2)}</span>
-                </div>
                 <div className="mt-3 flex justify-between">
                   <span className="text-primaryGreen font-bold text-xl">Total</span>
                   <span className="text-primaryGreen font-bold text-xl">{totalAmount.toFixed(2)}</span>
@@ -326,10 +329,9 @@ const TransactionForm = () => {
             valid={isTransactionValid}
             items={medicineItems}
             subtotal={subtotal}
-            taxAmount={taxAmount}
-            discount={discountValue}
             total={totalAmount}
-            receiptNumber={receiptNumber}
+            receiptNumber=""
+            transacData={transactionData}
             onClose={dismissModal}
           />
         </footer>
