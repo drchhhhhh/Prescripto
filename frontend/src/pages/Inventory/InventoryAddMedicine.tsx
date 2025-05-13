@@ -73,7 +73,7 @@ const InventoryAddMedicine = () => {
     };
 
     return (
-        <main className="bg-primaryBG w-full h-full pl-64">
+        <main className="bg-primaryBG w-full h-full pl-64 font-poppins">
             <Header />
 
             <div className="w-full max-w-7xl mx-auto px-5 flex flex-col flex-1 mt-5">
@@ -176,7 +176,7 @@ const InventoryAddMedicine = () => {
                         {/* How to Use */}
                         <div className="flex flex-col flex-1 min-w-[200px]">
                             <label className="text-sm font-medium text-gray-700 mb-1">
-                                How to Use*
+                                Description*
                             </label>
                             <input
                                 type="text"
