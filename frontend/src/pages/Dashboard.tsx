@@ -240,13 +240,10 @@ const Dashboard = () => {
                 <p className="text-gray-600 mt-1">Medicine Shortage</p>
               </div>
               <div className="bg-red-50 py-2.5 px-4 hover:bg-red-100 cursor-pointer">
-                <button
-                  onClick={() => navigate("/inventory/stockstatus")}
-                  className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600 cursor-pointer"
+                <div
+                  className="w-full h-5 flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600 cursor-pointer"
                 >
-                  Resolve Now
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </button>
+                </div>
               </div>
             </div>
           </div>

@@ -125,9 +125,8 @@ const InventoryPage = () => {
           <MdOutlineWarningAmber className="text-redBorder text-6xl mt-2" />
           <h1 className="text-xl">{short ?? "Loading..."}</h1>
           <h1 className="text-xl">Medicine Shortage</h1>
-          <Link to="/inventory/stockstatus" className="bg-peach text-center w-full p-1 border-t-2 border-redBorder rounded-b-sm cursor-pointer hover:bg-peach-dark ease-in duration-100">
-              Resolve Now »
-          </Link>
+          <div className="h-8 bg-peach text-center w-full p-1 border-t-2 border-redBorder rounded-b-sm">
+          </div>
           </div>
       </section>
     </main>
