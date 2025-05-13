@@ -97,7 +97,7 @@ const InventoryEditMedicine = () => {
             if (!response.ok) throw new Error(`Error: ${response.status}`);
 
             const data = await response.json();
-            navigate("/inventory");
+            navigate("/inventory/item-list");
             return data;
 
         } catch (error) {
