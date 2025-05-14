@@ -1,4 +1,4 @@
-# 💊 Prescripto: Pharmaceutical Resource & Efficient Stock Control Repository Procurement & Tracking Operations
+# 💊 PRESCRIPTO: Pharmaceutical Resource & Efficient Stock Control Repository for Inventory Procurement & Tracking Operations
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#)
