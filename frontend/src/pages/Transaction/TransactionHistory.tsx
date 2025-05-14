@@ -10,6 +10,7 @@ type Transaction = {
   receiptNo: string
   date: string
   medicineName: string
+  transactionType: string
   quantity: number
   unitPrice: number
   totalAmount: number
@@ -52,6 +53,7 @@ const TransactionHistory = () => {
             receiptNo: transaction.receiptNumber,
             date: new Date(transaction.createdAt).toLocaleDateString(),
             medicineName: item?.medicine?.name || "Unknown",
+            transactionType: transaction.transactionType,
             quantity: item.quantity,
             unitPrice: item.price,
             totalAmount: item.price * item.quantity,
@@ -75,6 +77,7 @@ const TransactionHistory = () => {
         transaction.receiptNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.date.includes(searchTerm) ||
         transaction.medicineName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transaction.transactionType.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.quantity.toString().includes(searchTerm) ||
         transaction.unitPrice.toString().includes(searchTerm) ||
         transaction.totalAmount.toString().includes(searchTerm),
@@ -234,6 +237,9 @@ const TransactionHistory = () => {
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Transaction Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Medicine Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -253,6 +259,7 @@ const TransactionHistory = () => {
                     <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{transaction.receiptNo}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">{transaction.date}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">{transaction.transactionType.toUpperCase()}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">{transaction.medicineName}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">{transaction.quantity}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">Php {transaction.unitPrice.toFixed(2)}</td>

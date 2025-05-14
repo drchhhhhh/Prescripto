@@ -185,7 +185,7 @@ const Dashboard = () => {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-darkGray">
-                  P {dashSummary?.rev.revenue.toFixed(2)}
+                  P {Number(dashSummary?.rev.revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </h2>
                 <div className="flex items-center text-gray-600 mt-1">
                   <span>Revenue</span>
