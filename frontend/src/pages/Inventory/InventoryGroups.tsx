@@ -11,7 +11,7 @@ interface Medication {
   id: number;
   name: string;
   description: string;
-  stock: number;
+  quantity: number;
   price: number;
 }
 
@@ -246,7 +246,7 @@ export default function InventoryGroups() {
                             <p className="text-sm text-gray-600 mb-3">{med.description}</p>
                             <div className="flex justify-between items-center">
                               <span className={`text-sm px-2 py-1 rounded-full ${colorClass}`}>
-                                Stock: {med.stock}
+                                Stock: {med.quantity}
                               </span>
                             </div>
                           </div>
