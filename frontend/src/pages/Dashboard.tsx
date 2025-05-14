@@ -188,7 +188,7 @@ const Dashboard = () => {
                   P {dashSummary?.rev.revenue.toFixed(2)}
                 </h2>
                 <div className="flex items-center text-gray-600 mt-1">
-                  <span>Revenue:</span>
+                  <span>Revenue</span>
                 </div>
               </div>
               <div className="bg-yellow-50 py-5 px-4"></div>
@@ -243,6 +243,13 @@ const Dashboard = () => {
                 <div
                   className="w-full h-5 flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600 cursor-pointer"
                 >
+                  <button
+                  onClick={() => navigate("/inventory/stockstatus")}
+                  className="w-full flex items-center justify-center text-red-500 text-sm font-medium hover:text-red-600 cursor-pointer"
+                  >
+                    Resolve Now
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </button>
                 </div>
               </div>
             </div>
